@@ -12,4 +12,4 @@ RUN chmod +x /entrypoint.sh
 
 EXPOSE 80 443
 
-CMD ["sleep 6666"]
+CMD ["sleep", "6666"]
