@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1044.49333292" height="634.666508" font-family="'Cascadia Code','Source Code Pro',Menlo,Consolas,'DejaVu Sans Mono',monospace,'Symbols Nerd Font'" font-size="14px">
+  <style>
+    .br { font-weight: bold }
+    .fa { fill-opacity: 0.5 }
+    .it { font-style: italic }
+    .un { text-decoration: underline }
+    .term-text tspan tspan { white-space: pre }
+
+    @font-face {
+      font-family: "Symbols Nerd Font";
+      src: url("https://asciinema.org/fonts/SymbolsNerdFont-Regular-337b40fc23735cb78fbe3379fae18138.woff2?vsn=d") format("woff2");
+    }
+
+  </style>
+
+  <rect width="100%" height="100%" style="fill: #121314" rx="4" ry="4"></rect>
+
+  <svg x="8.42333333" y="9.333331000000001" class="default-text-fill">
+    <image x="0" y="0" width="1027.64666626" height="615.999846" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA9AAAAMYCAIAAACsd5hmAAAQKElEQVR4Xu3WsY0QQBAEQT4FIBkgfvi0SABnjNYhbZW5Wme8/vj67fsXAACg8SG4AQCgI7gBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuAEAICS4AQAgJLgBACAkuDnh88/vEzsBgP+P4OYEwQ0AvCK4OUFwAwCvCG5OENwAwCuCmxMENwDwiuDmBMENALwiuDlBcAMArwhuThDcAMArgpsTBDcA8Irg5gTBDQC8Irg5QXADAK8Ibk4Q3ADAK4KbEwQ3APCK4OYEwQ0AvCK4OUFwAwCvCG5OENwAwCuCmxMENwDwiuDmBMENALwiuDlBcAMArwhuThDcAMArgpsTBDcA8Irg5gTBDQC8Irg5QXADAK8Ibk4Q3ADAK4IbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbAABCghsAAEKCGwAAQoIbBp9/fv/z+8fPX/+8AwAIbhgIbgBgJbhhILgBgJXghoHgBgBWghsGghsAWAluGAhuAGAluGEguAGAleCGgeAGAFaCGwaCGwBYCW4YCG4AYCW4YSC4AYCV4IaB4AYAVoIbBoIbAFgJbhgIbgBgJbhhILgBgJXghoHgBgBWghsGghsAWAluGAhuAGAluGEguAGAleCGgeAGAFaCGwaCGwBYCW4YCG4AYCW4YSC4AYCV4IaB4AYAVn8BvCUzMECmLMgAAAAASUVORK5CYII=" preserveAspectRatio="none" style="image-rendering: pixelated; image-rendering: crisp-edges;"></image>
+
+    <text xml:space="preserve" class="term-text" style="fill: #cccccc">
+      <tspan y="0.0">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/templates/clusterrolebinding.yaml                                                   </tspan>
+      </tspan><tspan y="18.666662000000002">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/alertmanager/templates/services.yaml                                         </tspan>
+      </tspan><tspan y="37.333324000000005">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/alertmanager/templates/services.yaml                                         </tspan>
+      </tspan><tspan y="55.99998600000001">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/kube-state-metrics/templates/service.yaml                                    </tspan>
+      </tspan><tspan y="74.66664800000001">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/prometheus-node-exporter/templates/service.yaml                              </tspan>
+      </tspan><tspan y="93.33331000000001">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/prometheus-pushgateway/templates/service.yaml                                </tspan>
+      </tspan><tspan y="111.99997200000001">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/templates/service.yaml                                                              </tspan>
+      </tspan><tspan y="130.66663400000002">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/prometheus-node-exporter/templates/daemonset.yaml                            </tspan>
+      </tspan><tspan y="149.33329600000002">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/kube-state-metrics/templates/deployment.yaml                                 </tspan>
+      </tspan><tspan y="167.99995800000002">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/prometheus-pushgateway/templates/deployment.yaml                             </tspan>
+      </tspan><tspan y="186.66662000000002">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/templates/deploy.yaml                                                               </tspan>
+      </tspan><tspan y="205.33328200000003">
+        <tspan dy="1em" x="0.0">wrote prometheus-manifests/prometheus/charts/alertmanager/templates/statefulset.yaml                                      </tspan>
+      </tspan><tspan y="223.99994400000003">
+        <tspan dy="1em" x="0.0">                                                                                                                          </tspan>
+      </tspan><tspan y="242.66660600000003">
+        <tspan dy="1em" x="0.0">root@ubuntu:~/install-kubernetes# helm show values prometheus-community/prometheus &gt; values.yaml                          </tspan>
+      </tspan><tspan y="261.33326800000003">
+        <tspan dy="1em" x="0.0">level=WARN msg=&quot;unable to find exact version; falling back to closest available version&quot; chart=prometheus requested=&quot;&quot; sel</tspan>
+      </tspan><tspan y="279.99993">
+        <tspan dy="1em" x="0.0">ected=27.50.1                                                                                                             </tspan>
+      </tspan><tspan y="298.66659200000004">
+        <tspan dy="1em" x="0.0">root@ubuntu:~/install-kubernetes# kubectl create namespace monitoring                                                     </tspan>
+      </tspan><tspan y="317.333254">
+        <tspan dy="1em" x="0.0">namespace/monitoring created                                                                                              </tspan>
+      </tspan><tspan y="335.99991600000004">
+        <tspan dy="1em" x="0.0">root@ubuntu:~/install-kubernetes# kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master</tspan>
+      </tspan><tspan y="354.666578">
+        <tspan dy="1em" x="0.0">/deploy/local-path-storage.yaml</tspan><tspan x="261.12333323" style="fill: #000000">                                                                                           </tspan>
+      </tspan><tspan y="373.33324000000005">
+        <tspan dy="1em" x="0.0">namespace/local-path-storage created                                                                                      </tspan>
+      </tspan><tspan y="391.999902">
+        <tspan dy="1em" x="0.0">serviceaccount/local-path-provisioner-service-account created                                                             </tspan>
+      </tspan><tspan y="410.66656400000005">
+        <tspan dy="1em" x="0.0">role.rbac.authorization.k8s.io/local-path-provisioner-role created                                                        </tspan>
+      </tspan><tspan y="429.333226">
+        <tspan dy="1em" x="0.0">clusterrole.rbac.authorization.k8s.io/local-path-provisioner-role created                                                 </tspan>
+      </tspan><tspan y="447.99988800000006">
+        <tspan dy="1em" x="0.0">rolebinding.rbac.authorization.k8s.io/local-path-provisioner-bind created                                                 </tspan>
+      </tspan><tspan y="466.66655000000003">
+        <tspan dy="1em" x="0.0">clusterrolebinding.rbac.authorization.k8s.io/local-path-provisioner-bind created                                          </tspan>
+      </tspan><tspan y="485.33321200000006">
+        <tspan dy="1em" x="0.0">deployment.apps/local-path-provisioner created                                                                            </tspan>
+      </tspan><tspan y="503.99987400000003">
+        <tspan dy="1em" x="0.0">storageclass.storage.k8s.io/local-path created                                                                            </tspan>
+      </tspan><tspan y="522.6665360000001">
+        <tspan dy="1em" x="0.0">configmap/local-path-config created                                                                                       </tspan>
+      </tspan><tspan y="541.333198">
+        <tspan dy="1em" x="0.0">root@ubuntu:~/install-kubernetes# kubectl get storageclass                                                                </tspan>
+      </tspan><tspan y="559.99986">
+        <tspan dy="1em" x="0.0">NAME         PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE                    </tspan>
+      </tspan><tspan y="578.6665220000001">
+        <tspan dy="1em" x="0.0">local-path   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  10s                    </tspan>
+      </tspan><tspan y="597.3331840000001">
+        <tspan dy="1em" x="0.0">root@ubuntu:~/install-kubernetes# </tspan><tspan x="286.39333322" style="fill: #000000"> </tspan><tspan x="294.81666655">                                                                                       </tspan>
+      </tspan>
+    </text>
+  </svg>
+
+  <svg x="458.78" y="253.867" width="126.933" height="126.933">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000.0 1000.0" style="filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.4))">
+  <defs>
+    <mask id="small-triangle-mask">
+      <rect width="100%" height="100%" fill="white"></rect>
+      <polygon points="700.0 500.0, 400.00000000000006 326.7949192431122, 399.9999999999999 673.2050807568877" fill="black">
+      </polygon>
+    </mask>
+  </defs>
+  <polygon points="1000.0 500.0, 250.0000000000001 66.98729810778059, 249.99999999999977 933.0127018922192" mask="url(#small-triangle-mask)" fill="white">
+  </polygon>
+  <polyline points="673.2050807568878 400.0, 326.7949192431123 600.0" stroke="white" stroke-width="90">
+  </polyline>
+</svg>
+  </svg>
+</svg>
