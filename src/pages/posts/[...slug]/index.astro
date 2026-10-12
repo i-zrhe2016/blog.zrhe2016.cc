@@ -134,14 +134,7 @@ const ogImage = ogImageUrl
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
 
-    <article
-      id="article"
-      class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-app",
-        "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
-      ]}
-    >
+    <article id="article" class:list={["mt-8 w-full", "app-prose max-w-app"]}>
       <Content />
     </article>
 
@@ -222,6 +215,9 @@ const ogImage = ogImageUrl
     const codeBlocks = Array.from(document.querySelectorAll("pre"));
 
     for (const codeBlock of codeBlocks) {
+      // Capture source text before adding UI, preserving raw pre whitespace.
+      const code = codeBlock.querySelector("code");
+      const text = (code ?? codeBlock).textContent ?? "";
       const wrapper = document.createElement("div");
       wrapper.style.position = "relative";
 
@@ -243,15 +239,12 @@ const ogImage = ogImageUrl
       wrapper.appendChild(codeBlock);
 
       copyButton.addEventListener("click", async () => {
-        await copyCode(codeBlock, copyButton);
+        await copyCode(text, copyButton);
       });
     }
 
-    async function copyCode(block, button) {
-      const code = block.querySelector("code");
-      const text = code?.innerText;
-
-      await navigator.clipboard.writeText(text ?? "");
+    async function copyCode(text, button) {
+      await navigator.clipboard.writeText(text);
 
       button.innerText = "Copied";
 
