@@ -108,6 +108,15 @@
     pre {
       @apply focus-visible:outline-accent focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-dashed;
     }
+
+    pre:not(.astro-code) {
+      @apply border-border bg-muted text-foreground border;
+
+      code {
+        @apply bg-transparent p-0;
+        overflow-wrap: normal;
+      }
+    }
   }
 
   /* ===== Code Blocks & Syntax Highlighting ===== */

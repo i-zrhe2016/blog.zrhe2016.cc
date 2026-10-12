@@ -10,6 +10,8 @@
 
 The import retains sanitized HTML in Markdown to preserve paragraphs, tables, IDs and all code exactly. It strips executable page scripts, forms, embeds, event attributes and unsafe URL schemes, while code containing script examples remains escaped text. Referenced images are downloaded under `public/images/bearblog`; internal blog links are rewritten to migrated routes. External links remain external.
 
+Imported raw HTML code blocks use the site's foreground and muted background in both themes; Shiki blocks retain their token themes. Post copy buttons preserve code text and whitespace, including raw `<pre>` blocks, and exclude the button label.
+
 To repeat the import, install Python `beautifulsoup4`, then run `python scripts/import-bearblog.py <snapshot-directory-outside-checkout>`. This replaces the posts directory and About content; inspect changes before retaining them. Source HTML captures stay outside Git. Build with `pnpm build`, then run `python scripts/check-migration.py` to compare every rendered body and code block against inventory and check titles, dates, routes, images, redirects and search assets.
 
 The build uses a portable Node copy step for Pagefind. The public-file lookup treats files as URLs, so hosting metadata is not parsed as JavaScript. Google Sans Code normal/italic at static weights 400/700 is bundled from the official [google/fonts source](https://github.com/google/fonts/tree/main/ofl/googlesanscode), instantiated from the upstream variable fonts using FontTools for Satori compatibility, with its OFL license in `src/assets/fonts/OFL.txt`, avoiding Google font metadata at build time. Chinese glyphs use browser system fallbacks.
