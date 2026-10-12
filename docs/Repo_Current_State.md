@@ -7,6 +7,7 @@ Last verified: 2026-10-13 @ working tree
 - Public Bear Blog posts and About content use AstroPaper static pages; source compatibility and content inventory are described in the [migration reference](reference/bearblog-migration.md).
 - Imported post code blocks use theme-aware colors and preserve source whitespace when copied; see the [migration reference](reference/bearblog-migration.md).
 - Chinese site metadata, Pagefind article search, RSS and sitemap are configured for `blog.zrhe2016.cc`.
+- Homepage presentation uses the English UI, omits the hero section, and hides Posts and Archives from the header navigation.
 - `wrangler.jsonc` declares the static-assets Worker and branch preview configuration; deployment details are in the [migration reference](reference/bearblog-migration.md).
 
 ## Constraints
