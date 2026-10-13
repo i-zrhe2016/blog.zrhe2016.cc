@@ -8,7 +8,7 @@
   "scripts": {
     "diagrams:render": "node scripts/render-plantuml.mjs",
     "dev": "astro dev",
-    "build": "node scripts/render-plantuml.mjs --check && astro check && astro build && pagefind --site dist && node scripts/copy-pagefind.mjs && node scripts/admin-build.mjs",
+    "build": "node scripts/render-plantuml-remote.mjs && node scripts/render-plantuml.mjs --check && astro check && astro build && pagefind --site dist && node scripts/copy-pagefind.mjs && node scripts/admin-build.mjs",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
