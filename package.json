@@ -6,8 +6,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "diagrams:render": "node scripts/render-plantuml.mjs",
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist && node scripts/copy-pagefind.mjs",
+    "build": "node scripts/render-plantuml.mjs --check && astro check && astro build && pagefind --site dist && node scripts/copy-pagefind.mjs",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
@@ -16,6 +17,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^7.2.0",
     "@astrojs/mdx": "^7.0.0",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
@@ -23,7 +25,6 @@
     "astro": "^7.0.3",
     "dayjs": "^1.11.21",
     "lodash.kebabcase": "^4.1.1",
-    "@astrojs/markdown-remark": "^7.2.0",
     "rehype-callouts": "^2.2.0",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",
@@ -42,6 +43,7 @@
     "eslint": "^10.6.0",
     "eslint-plugin-astro": "^2.1.1",
     "pagefind": "^1.5.2",
+    "plantuml-cli": "1.2026.8",
     "prettier": "3.9.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
