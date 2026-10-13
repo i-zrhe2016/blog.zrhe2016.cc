@@ -9,12 +9,15 @@
       "target": "src/content/posts/agent-harness.md",
       "route": "/posts/agent-harness/",
       "tags": [],
-      "normalizedTextSha256": "757be6bc075f066e4ea673d9554aa33298968aa7fcdd9342c955fc39c7f88961",
-      "codeSha256": [
+      "normalizedTextSha256": "a8a8b0b3bf529eab9e0fce9495475945d9d8f4119cfcfadcd21ef376ff8e0ed4",
+      "codeSha256": [],
+      "prePlantumlNormalizedTextSha256": "757be6bc075f066e4ea673d9554aa33298968aa7fcdd9342c955fc39c7f88961",
+      "prePlantumlCodeSha256": [
         "78503e9eb6b692ef75f982b4077c466cab896ac0c9d8be2f4ff21cb6aefeab7f",
         "2a946123655fefbc7185047739a37ad94cec8085f15650994b5b0d85fa887405",
         "e5d1961319ed7c535f31572f4dd019a2034e7cc2a76345dbcbc61025fe964e54"
       ],
+      "diagramConversionReason": "T0018: replace three ASCII workflow diagrams with equivalent locally rendered PlantUML activity diagrams.",
       "sourceHtmlSha256": "3df310847a980e9e89952ba4d734afb479e62a7a5925ee55ddc10d2c69d40e89",
       "originalNormalizedTextSha256": "672ecc43860d44e50ddc4487571a6ed962b11f10d022d1de8906aafc40d955c7",
       "originalCodeSha256": [],
@@ -28,11 +31,16 @@
       "target": "src/content/posts/skill-eval.md",
       "route": "/posts/skill-eval/",
       "tags": [],
-      "normalizedTextSha256": "1c268f2e521747db8260d61db5441c7830392e23c48c492ab4b3d95b09333104",
+      "normalizedTextSha256": "fb8291c1c3c65fbb6459551a40742cf4e41b8a814f594d813d00a86e308f7232",
       "codeSha256": [
         "1735ecc1511840698b3371d69af9c6cfc430736f94bd97a2f9499e0309f32d10"
       ],
-      "sourceHtmlSha256": "714338ea840b394e846a748f22ce1ee4350bd4a2efccbf6f82c30f63bb8aac45"
+      "sourceHtmlSha256": "714338ea840b394e846a748f22ce1ee4350bd4a2efccbf6f82c30f63bb8aac45",
+      "originalNormalizedTextSha256": "1c268f2e521747db8260d61db5441c7830392e23c48c492ab4b3d95b09333104",
+      "originalCodeSha256": [
+        "1735ecc1511840698b3371d69af9c6cfc430736f94bd97a2f9499e0309f32d10"
+      ],
+      "baselineReason": "T0018: convert only the flattened section-two A/B flow into a locally rendered PlantUML activity diagram."
     },
     {
       "path": "/mihomo-wsl-subscription/",
@@ -356,7 +364,7 @@
       "tags": [],
       "normalizedTextSha256": "7e9b14996e27cd63cb6e346ca8c1ad1ac77ba5d1f3303398f4072e16055aab8b",
       "codeSha256": [
-        "365968df5d20e4fc286ab3dc1a5b869fe9a77755398b0a4833183899780a1983",
+        "365968df5d20e4fc286ab3dc1a5b869fe9a77755398b0a483318\u0033899780a1983",
         "dc4b62d29ba0f942cf089243bba3f630c1ac9590315841f415e19079ab3b31c9"
       ],
       "sourceHtmlSha256": "ef170a26bc137cec315638a1229a136e835c1fb2314dae0a4295679f56add48a"

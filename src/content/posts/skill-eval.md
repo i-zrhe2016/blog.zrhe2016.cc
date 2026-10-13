@@ -27,29 +27,33 @@ Skill Eval 是你在 [codex-development-workflow PR #220](https://github.com/i-z
 
 ### 二、核心方法：盲测 A/B 对比
 
-同一个真实开发任务
-
-固定模型、仓库状态、权限、任务要求
-
-Baseline
-
-不使用待评估 Skill
-
-Treatment
-
-使用待评估 Skill
-
-匿名评审 Judge
-
-比较代码、测试、执行结果、耗时及成本
-
-输出评估结论
-
-PASS
-
-FAIL
-
-INCONCLUSIVE
+```plantuml Skill Eval 核心方法：匿名盲测 A/B 对比与评估结论
+@startuml
+!theme plain
+skinparam defaultFontName Microsoft YaHei
+title 核心方法：盲测 A/B 对比
+start
+:同一个真实开发任务;
+:固定模型、仓库状态、权限与任务要求;
+fork
+  :Baseline\n不使用待评估 Skill;
+fork again
+  :Treatment\n使用待评估 Skill;
+end fork
+:匿名评审 Judge;
+:比较代码、测试、执行结果、耗时及成本;
+:输出评估结论;
+switch (评估结论)
+case (PASS)
+  :PASS;
+case (FAIL)
+  :FAIL;
+case (INCONCLUSIVE)
+  :INCONCLUSIVE;
+endswitch
+stop
+@enduml
+```
 
 ### 三、结合你的开发工作流，可以评估什么？
 

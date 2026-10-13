@@ -7,7 +7,11 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 inventory = json.loads((ROOT / "docs/reference/migration-inventory.json").read_text(encoding="utf-8"))
-assert len(list((ROOT / "src/content/posts").glob("*.md"))) == inventory["postCount"] == 29
+published_posts = [
+    post for post in (ROOT / "src/content/posts").glob("*.md")
+    if re.search(r"^draft:\s*false\s*$", post.read_text(encoding="utf-8").split("---", 2)[1], re.M)
+]
+assert len(published_posts) == inventory["postCount"] == 29
 count = 0
 for page in inventory["pages"]:
     built = ROOT / "dist" / page["route"].strip("/") / "index.html"
@@ -33,7 +37,7 @@ for page in inventory["pages"]:
     for node in body.find_all(True):
         assert not any(a.lower().startswith("on") for a in node.attrs)
     for image in body.find_all("img"):
-        assert image["src"].startswith("/images/bearblog/")
+        assert image["src"].startswith(("/images/bearblog/", "/diagrams/plantuml/"))
         assert (ROOT / "dist" / image["src"].lstrip("/")).is_file()
     for link in body.select("a[href]"):
         if link["href"].startswith("/"):

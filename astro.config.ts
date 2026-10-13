@@ -18,6 +18,7 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
+import remarkPlantuml from "./scripts/plantuml.mjs";
 
 export default defineConfig({
   site: config.site.url,
@@ -39,6 +40,7 @@ export default defineConfig({
     processor: unified({
       smartypants: false,
       remarkPlugins: [
+        remarkPlantuml,
         remarkToc,
         [remarkCollapse, { test: "Table of contents" }],
       ],
