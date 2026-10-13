@@ -1,0 +1,12 @@
+# Copy to .dev.vars for wrangler dev --local only; never upload this file.
+LOCAL_ADMIN_AUTH="true"
+# Use a fine-grained token for this repository only, Contents: Read and write.
+GITHUB_TOKEN=""
+# Production authentication (configure these as Worker Secrets instead):
+ACCESS_TEAM_DOMAIN="your-team.cloudflareaccess.com"
+ACCESS_AUD="your-access-application-audience"
+ADMIN_EMAILS="your-email@example.com"
+# Optional deployment progress; final success also checks the deployed build marker.
+CLOUDFLARE_API_TOKEN=""
+CLOUDFLARE_ACCOUNT_ID=""
+CLOUDFLARE_WORKER_TAG=""

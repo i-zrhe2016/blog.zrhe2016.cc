@@ -1,3 +1,7 @@
 allowBuilds:
   esbuild: true
   sharp: true
+  workerd: true
+
+overrides:
+  "@types/hast": 3.0.5

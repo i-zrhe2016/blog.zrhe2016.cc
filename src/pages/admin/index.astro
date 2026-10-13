@@ -1,0 +1,161 @@
+---
+import "@/styles/global.css";
+import "@/admin/admin.css";
+---
+
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>文章后台 · zrhe2016</title>
+  </head>
+  <body data-pagefind-ignore>
+    <header class="admin-header">
+      <a class="brand" href="/admin/">zrhe2016 <span>文章后台</span></a>
+      <nav aria-label="后台导航">
+        <a href="/" target="_blank" rel="noopener">查看博客 ↗</a><button
+          id="theme"
+          type="button">切换主题</button
+        ><a href="/cdn-cgi/access/logout">退出</a>
+      </nav>
+    </header>
+    <div class="admin-shell">
+      <aside class="sidebar" aria-label="文章列表">
+        <div class="sidebar-heading">
+          <h1>文章</h1><button id="new" class="primary">＋ 新建</button>
+        </div>
+        <label class="sr-only" for="search">搜索文章</label><input
+          id="search"
+          type="search"
+          placeholder="搜索标题或文件名"
+        />
+        <label class="sr-only" for="filter">筛选文章</label><select id="filter"
+          ><option value="all">全部文章</option><option value="published"
+            >仓库已发布</option
+          ><option value="draft">草稿 / 本地修改</option></select
+        >
+        <button id="refresh">刷新列表</button>
+        <p id="list-status" role="status">正在读取文章…</p>
+        <div id="posts"></div>
+        <p class="storage-note">
+          草稿仅保存在当前浏览器。清除浏览器数据会丢失未发布修改，可导出
+          Markdown 备份。
+        </p>
+      </aside>
+      <main class="workspace">
+        <div id="notice" role="status" aria-live="polite"></div>
+        <div id="empty">
+          <span class="empty-mark">Md</span><h2>写下新的想法</h2><p>
+            选择一篇文章，或新建文章开始编辑。
+          </p><p>实时预览 · 本地自动保存 · 点击发布上线</p>
+        </div>
+        <section id="editing" hidden aria-label="文章编辑器">
+          <div class="document-header">
+            <div>
+              <p id="document-path"></p><p id="save-status" role="status">
+                尚未修改
+              </p>
+            </div><div class="actions">
+              <button id="save">保存草稿</button><button id="export"
+                >导出 MD</button
+              ><button id="remote">读取远端比较</button><button id="unpublish"
+                >下架</button
+              ><button id="publish" class="primary">发布文章</button>
+            </div>
+          </div>
+          <p id="deploy-status" role="status" aria-live="polite"></p>
+          <form id="metadata" class="metadata" autocomplete="off">
+            <label class="title-field">标题<input id="title" required /></label>
+            <label class="description-field"
+              >摘要<textarea id="description" required rows="2"
+              ></textarea></label
+            >
+            <label
+              >标签（逗号分隔）<input
+                id="tags"
+                placeholder="技术, 工具"
+              /></label
+            >
+            <label
+              >发布日期（ISO 时间）<input
+                id="pubDatetime"
+                placeholder="2026-10-13T09:00:00Z"
+                required
+              /></label
+            >
+            <label class="checkbox"
+              ><input id="featured" type="checkbox" />置顶文章</label
+            >
+          </form>
+          <div class="toolbar" role="toolbar" aria-label="Markdown 工具栏">
+            <button data-insert="heading">标题</button><button
+              data-insert="bold"><b>粗体</b></button
+            ><button data-insert="italic"><i>斜体</i></button><button
+              data-insert="link">链接</button
+            ><button data-insert="code">代码块</button><button
+              data-insert="list">列表</button
+            ><button id="image">插入图片</button><input
+              id="image-input"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              multiple
+              hidden
+            /><span>源码中可编辑高级元数据</span>
+          </div>
+          <div class="view-tabs" role="group" aria-label="编辑视图">
+            <button id="view-edit" aria-pressed="true">编辑</button><button
+              id="view-preview"
+              aria-pressed="false">预览</button
+            >
+          </div>
+          <div class="panes" data-view="edit">
+            <div class="editor-pane">
+              <div class="pane-label">MARKDOWN</div><div id="editor"></div>
+            </div><div class="preview-pane">
+              <div class="pane-label">实时预览</div><h2 id="preview-title">
+              </h2><article id="preview" class="app-prose"></article>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <dialog id="new-dialog">
+      <form id="new-form">
+        <h2>新建文章</h2><label
+          >文件名<input
+            id="new-slug"
+            placeholder="my-new-post"
+            required
+            pattern="[a-zA-Z0-9\u4e00-\u9fff][a-zA-Z0-9\u4e00-\u9fff_-]*"
+          /></label
+        ><p>使用英文、中文、数字、短横线或下划线。创建后网址固定。</p><div
+          class="actions"
+        >
+          <button type="button" id="cancel-new">取消</button><button
+            type="submit"
+            class="primary">创建草稿</button
+          >
+        </div>
+      </form>
+    </dialog>
+    <dialog id="compare-dialog">
+      <h2>远端版本比较</h2><p>
+        本地修改不会自动覆盖远端。先导出本地版本，再选择基于远端重新编辑。
+      </p><div class="compare-panes">
+        <label>当前本地<textarea id="compare-local" readonly></textarea></label
+        ><label
+          >最新远端<textarea id="compare-remote" readonly></textarea></label
+        >
+      </div><div class="actions">
+        <button id="compare-export">导出本地 MD</button><button
+          id="compare-close">继续本地编辑</button
+        ><button id="compare-accept" class="primary">使用远端版本</button>
+      </div>
+    </dialog>
+    <script>
+      import "@/admin/editor";
+    </script>
+  </body>
+</html>
