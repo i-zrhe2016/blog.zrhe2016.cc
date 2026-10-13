@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import "@/admin/admin.css";
+import config from "@/config";
 ---
 
 <!doctype html>
@@ -11,8 +12,11 @@ import "@/admin/admin.css";
     <meta name="robots" content="noindex, nofollow" />
     <title>文章后台 · zrhe2016</title>
   </head>
-  <body data-pagefind-ignore>
-    <header class="admin-header">
+  <body
+    data-pagefind-ignore
+    data-public-origin={new URL(config.site.url).origin}
+  >
+    <header class="admin-header app-layout">
       <a class="brand" href="/admin/">zrhe2016 <span>文章后台</span></a>
       <nav aria-label="后台导航">
         <a href="/" target="_blank" rel="noopener">查看博客 ↗</a><button
@@ -21,35 +25,38 @@ import "@/admin/admin.css";
         ><a href="/cdn-cgi/access/logout">退出</a>
       </nav>
     </header>
-    <div class="admin-shell">
-      <aside class="sidebar" aria-label="文章列表">
-        <div class="sidebar-heading">
-          <h1>文章</h1><button id="new" class="primary">＋ 新建</button>
-        </div>
-        <label class="sr-only" for="search">搜索文章</label><input
-          id="search"
-          type="search"
-          placeholder="搜索标题或文件名"
-        />
-        <label class="sr-only" for="filter">筛选文章</label><select id="filter"
-          ><option value="all">全部文章</option><option value="published"
-            >仓库已发布</option
-          ><option value="draft">草稿 / 本地修改</option></select
-        >
-        <button id="refresh">刷新列表</button>
-        <p id="list-status" role="status">正在读取文章…</p>
-        <div id="posts"></div>
-        <p class="storage-note">
-          草稿仅保存在当前浏览器。清除浏览器数据会丢失未发布修改，可导出
-          Markdown 备份。
-        </p>
-      </aside>
+    <div class="admin-shell app-layout">
       <main class="workspace">
+        <div class="opening">
+          <h1>文章编辑</h1>
+          <form id="open-form">
+            <label for="article-url">博客文章链接</label>
+            <div class="link-controls">
+              <input
+                id="article-url"
+                type="url"
+                required
+                placeholder="https://blog.zrhe2016.cc/posts/article"
+              /><button id="open-link" type="submit" class="primary"
+                >打开文章</button>
+            </div>
+          </form>
+          <div class="draft-controls">
+            <button id="new" class="primary">＋ 新建</button><label
+              for="local-draft">恢复本地草稿</label
+            ><select id="local-draft"
+              ><option value="">选择本地草稿…</option></select>
+          </div>
+          <p class="storage-note">
+            草稿仅保存在当前浏览器。清除浏览器数据会丢失未发布修改，可导出
+            Markdown 备份。
+          </p>
+        </div>
         <div id="notice" role="status" aria-live="polite"></div>
         <div id="empty">
           <span class="empty-mark">Md</span><h2>写下新的想法</h2><p>
-            选择一篇文章，或新建文章开始编辑。
-          </p><p>实时预览 · 本地自动保存 · 点击发布上线</p>
+            粘贴博客文章链接，或新建文章开始编辑。
+          </p><p>点击预览 · 本地自动保存 · 点击发布上线</p>
         </div>
         <section id="editing" hidden aria-label="文章编辑器">
           <div class="document-header">
@@ -114,7 +121,7 @@ import "@/admin/admin.css";
             <div class="editor-pane">
               <div class="pane-label">MARKDOWN</div><div id="editor"></div>
             </div><div class="preview-pane">
-              <div class="pane-label">实时预览</div><h2 id="preview-title">
+              <div class="pane-label">文章预览</div><h2 id="preview-title">
               </h2><article id="preview" class="app-prose"></article>
             </div>
           </div>

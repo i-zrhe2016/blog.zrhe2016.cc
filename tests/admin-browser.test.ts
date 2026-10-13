@@ -56,16 +56,11 @@ async function fixture(page: Page) {
   await page.route("**/api/admin/**", async route => {
     const url = new URL(route.request().url());
     if (url.pathname.endsWith("/posts"))
-      return route.fulfill({
-        json: {
-          posts: [
-            { path: first, sha: "old", title: "第一篇", draft: false },
-            { path: second, sha: "second", title: "第二篇", draft: false },
-          ],
-        },
-      });
+      throw new Error("List must never be fetched");
     if (url.pathname.endsWith("/post")) {
       const path = url.searchParams.get("path");
+      if (path?.endsWith("new-article.md"))
+        return route.fulfill({ status: 404, json: { error: "不存在" } });
       return route.fulfill({
         json: {
           path,
@@ -81,12 +76,21 @@ async function fixture(page: Page) {
       json: { error: "unexpected API request" },
     });
   });
+  await page.route("**/admin/post-paths.json", route =>
+    route.fulfill({ json: { "/posts/one": first, "/posts/two": second } })
+  );
   await page.goto(`${origin}/admin/`);
-  await page.locator(".post-item").first().waitFor();
+  await page.locator("#article-url").waitFor();
   return errors;
 }
+async function openLink(page: Page, slug: string) {
+  await page
+    .locator("#article-url")
+    .fill(`https://blog.zrhe2016.cc/posts/${slug}`);
+  await page.locator("#open-link").click();
+}
 async function openFirst(page: Page) {
-  await page.getByRole("button", { name: /第一篇/ }).click();
+  await openLink(page, "one");
   await page.locator("#title").waitFor({ state: "visible" });
   await page.waitForFunction(
     () => document.querySelector<HTMLInputElement>("#title")?.value === "第一篇"
@@ -102,6 +106,23 @@ test(
     const page = await context.newPage();
     const errors = await fixture(page);
     await openFirst(page);
+    assert.equal(await page.locator("#preview").textContent(), "");
+    assert.equal(
+      await page.locator(".sidebar, #search, #filter, #posts").count(),
+      0
+    );
+    const shell = await page.locator(".admin-shell").boundingBox();
+    assert.ok(
+      shell &&
+        shell.width <= 768 &&
+        Math.abs(shell.x - (1440 - shell.width) / 2) < 2
+    );
+    if (process.env.ADMIN_SCREENSHOT_DIR)
+      await page.screenshot({
+        path: `${process.env.ADMIN_SCREENSHOT_DIR}/admin-desktop.png`,
+        fullPage: true,
+      });
+    await page.locator("#view-preview").click();
     await page.locator("#preview pre.shiki.astro-code").waitFor();
     assert.ok(
       (await page.locator("#preview pre.astro-code").textContent())?.includes(
@@ -113,7 +134,14 @@ test(
       await page.locator("#preview h2").first().getAttribute("id"),
       "preview-正文"
     );
+    await page.locator("#view-edit").click();
     await page.locator("#title").fill("中文标题已修改");
+    await page.waitForTimeout(400);
+    assert.equal(
+      await page.locator("#preview-title").textContent(),
+      "第一篇",
+      "edit does not render"
+    );
     await page.locator("#save").click();
     await page.waitForFunction(() =>
       document
@@ -121,7 +149,7 @@ test(
         ?.textContent?.includes("已保存到当前浏览器")
     );
     await page.reload();
-    await page.getByRole("button", { name: /中文标题已修改/ }).click();
+    await page.locator("#title").waitFor();
     await page.waitForFunction(
       () =>
         document.querySelector<HTMLInputElement>("#title")?.value ===
@@ -135,19 +163,24 @@ test(
     await page
       .locator("#image-input")
       .setInputFiles({ name: "paste.png", mimeType: "image/png", buffer: png });
+    await page.locator("#view-preview").click();
     await page.waitForFunction(() => {
       const img = document.querySelector<HTMLImageElement>("#preview img");
       return !!img?.src.startsWith("blob:") && img.naturalWidth > 0;
     });
     await page.reload();
-    await page.getByRole("button", { name: /中文标题已修改/ }).click();
+    await page.locator("#title").waitFor();
+    assert.equal(await page.locator("#preview").textContent(), "");
+    await page.locator("#view-preview").click();
     await page.waitForFunction(
       () =>
         document.querySelector<HTMLImageElement>("#preview img")
           ?.naturalWidth === 1
     );
     const source = `${raw("安全预览")}\n<script>window.__previewAttack = true</script>\n<img src="x" onerror="window.__previewAttack=true">\n[危险](javascript:alert(1))\n`;
+    await page.locator("#view-edit").click();
     await page.locator(".cm-content").fill(source);
+    await page.locator("#view-preview").click();
     await page.waitForFunction(
       () => document.querySelector("#preview-title")?.textContent === "安全预览"
     );
@@ -163,7 +196,7 @@ test(
         .count(),
       0
     );
-    await page.getByRole("button", { name: /第二篇/ }).click();
+    await openLink(page, "two");
     await page.waitForFunction(
       () =>
         document.querySelector<HTMLInputElement>("#title")?.value === "第二篇"
@@ -185,6 +218,11 @@ test(
       ),
       "mobile layout must not overflow"
     );
+    if (process.env.ADMIN_SCREENSHOT_DIR)
+      await page.screenshot({
+        path: `${process.env.ADMIN_SCREENSHOT_DIR}/admin-mobile.png`,
+        fullPage: true,
+      });
     await page.locator("#new").click();
     await page.locator("#new-slug").fill("new-article");
     await page.getByRole("button", { name: "创建草稿" }).click();
@@ -194,6 +232,14 @@ test(
         ?.textContent?.endsWith("new-article.md")
     );
     assert.equal(await page.locator("#title").inputValue(), "未命名文章");
+    await page.reload();
+    await page.locator("#title").waitFor();
+    assert.equal(await page.locator("#title").inputValue(), "未命名文章");
+    await page.locator("#local-draft").selectOption(first);
+    await page.waitForFunction(
+      () =>
+        document.querySelector<HTMLInputElement>("#title")?.value === "安全预览"
+    );
     assert.deepEqual(errors, []);
     await context.close();
   }
@@ -229,7 +275,7 @@ test(
     await page.locator("#title").fill("发布测试");
     await page.locator("#publish").click();
     assert.ok(
-      await page.getByRole("button", { name: /第二篇/ }).isDisabled(),
+      await page.locator("#open-link").isDisabled(),
       "publishing locks article switching before asynchronous saves"
     );
     assert.equal(
@@ -246,6 +292,11 @@ test(
       document
         .querySelector("#deploy-status")
         ?.textContent?.includes("部署成功")
+    );
+    assert.equal(
+      await page.locator("#preview").textContent(),
+      "",
+      "publish and poll never render"
     );
     assert.equal(submissions.length, 2);
     assert.equal(
@@ -273,6 +324,53 @@ test(
       (await page.locator("#compare-remote").inputValue()).includes("第一篇")
     );
     await page.locator("#compare-close").click();
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
+);
+
+test(
+  "browser: rejected links and expired authentication preserve local editing",
+  { timeout: 30_000 },
+  async () => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const errors = await fixture(page);
+    await openFirst(page);
+    for (const url of [
+      "https://foreign.example/posts/one",
+      "https://blog.zrhe2016.cc/about",
+      "https://blog.zrhe2016.cc/posts/%2e%2e/one",
+      "https://blog.zrhe2016.cc/posts/missing",
+    ]) {
+      await page.locator("#article-url").fill(url);
+      await page.locator("#open-link").click();
+      await page.waitForFunction(
+        () =>
+          document.querySelector("#notice")?.getAttribute("data-error") ===
+          "true"
+      );
+      assert.equal(await page.locator("#title").inputValue(), "第一篇");
+    }
+    await page.route("**/api/admin/post?**", route =>
+      route.fulfill({ status: 401, contentType: "text/html", body: "Login" })
+    );
+    await openLink(page, "two");
+    await page.waitForFunction(() =>
+      document.querySelector("#notice")?.textContent?.includes("登录已过期")
+    );
+    assert.equal(await page.locator("#title").inputValue(), "第一篇");
+    await page.locator("#new").click();
+    await page.locator("#new-slug").fill("auth-failure");
+    await page.getByRole("button", { name: "创建草稿" }).click();
+    await page.waitForFunction(() =>
+      document.querySelector("#notice")?.textContent?.includes("登录已过期")
+    );
+    assert.ok(
+      await page.locator("#new-dialog").isVisible(),
+      "auth failure is not a missing filename"
+    );
+    assert.equal(await page.locator("#title").inputValue(), "第一篇");
     assert.deepEqual(errors, []);
     await context.close();
   }

@@ -5,7 +5,7 @@ Last verified: 2026-10-13 @ working tree
 ## Implemented
 
 - PlantUML Markdown fences use checked-in source/version-addressed SVG assets; local generation and build prerequisites are described in the [PlantUML reference](reference/plantuml.md). Four activity diagrams in `agent-harness` and `skill-eval` describe the workflows; a draft example article demonstrates a sequence diagram.
-- `/admin/` provides a Markdown editor with local IndexedDB drafts, sanitized live previews, image staging, GitHub atomic publication and Cloudflare Access authentication; see [admin setup](Admin_Editor.md).
+- `/admin/` provides a Markdown editor with local IndexedDB drafts, sanitized manual previews and direct opening by public article URL, image staging, GitHub atomic publication and Cloudflare Access authentication; see [admin setup](Admin_Editor.md).
 
 
 - Public Bear Blog posts and About content use AstroPaper static pages; source compatibility and content inventory are described in the [migration reference](reference/bearblog-migration.md).
