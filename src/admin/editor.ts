@@ -13,6 +13,7 @@ import {
 } from "./content";
 import { readDrafts, writeDraft, type Draft } from "./storage";
 import { renderPreview } from "./preview";
+import { articleRoute } from "./article-url";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) =>
   document.getElementById(id) as T;
@@ -23,14 +24,6 @@ const message = (text: string, error = false) => {
 };
 const failure = (e: unknown) =>
   message(e instanceof Error ? e.message : String(e), true);
-interface Post {
-  path: string;
-  sha: string;
-  title: string;
-  draft: boolean;
-  error?: boolean;
-}
-let posts: Post[] = [];
 const drafts = new Map<string, Draft>();
 let current: Draft | undefined;
 let view: EditorView;
@@ -40,13 +33,20 @@ let switching = false;
 let publishing = false;
 let persistedRaw = "";
 let timer: ReturnType<typeof setTimeout>;
-let previewTimer: ReturnType<typeof setTimeout>;
 let pollTimer: ReturnType<typeof setTimeout>;
 let previewRevision = 0;
 let openRevision = 0;
 const objectUrls = new Map<string, string>();
 let remote: { path: string; sha: string; markdown: string } | undefined;
 
+class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number
+  ) {
+    super(message);
+  }
+}
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api/admin/${path}`, {
     ...init,
@@ -57,89 +57,72 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error("登录已过期，请刷新页面重新登录；本地草稿仍可恢复。");
   const data = await response.json();
   if (!response.ok)
-    throw new Error(data.error || `请求失败 (${response.status})`);
+    throw new ApiError(
+      data.error || `请求失败 (${response.status})`,
+      response.status
+    );
   return data;
 }
 function dirty(draft: Draft) {
   return draft.raw !== draft.baseRaw || !draft.baseSha;
 }
-function renderList() {
-  const search = input("search").value.toLowerCase();
-  const filter = $<HTMLSelectElement>("filter").value;
-  const items = new Map(posts.map(post => [post.path, { ...post }]));
-  for (const draft of drafts.values()) {
-    const existing = items.get(draft.path);
-    if (existing && dirty(draft)) {
-      try {
-        existing.title = String(
-          splitMarkdown(draft.raw).metadata.title || existing.title
-        );
-      } catch {
-        /* Keep the last valid title. */
-      }
-    }
-    if (!items.has(draft.path)) {
-      let title = draft.path.split("/").pop()!;
-      try {
-        title = String(splitMarkdown(draft.raw).metadata.title || title);
-      } catch {
-        /* Invalid source stays editable. */
-      }
-      items.set(draft.path, {
-        path: draft.path,
-        title,
-        sha: draft.baseSha,
-        draft: true,
-      });
-    }
-  }
-  const container = $("posts");
-  container.replaceChildren();
-  for (const post of [...items.values()].sort((a, b) =>
-    a.title.localeCompare(b.title, "zh-CN")
+function renderRecovery() {
+  const select = $<HTMLSelectElement>("local-draft");
+  select.replaceChildren(new Option("选择本地草稿…", ""));
+  for (const draft of [...drafts.values()].sort(
+    (a, b) => b.updatedAt - a.updatedAt
   )) {
-    const local = drafts.get(post.path);
-    const changed = local && dirty(local);
-    if (!(post.title + post.path).toLowerCase().includes(search)) continue;
-    if (filter === "published" && (post.draft || !post.sha)) continue;
-    if (filter === "draft" && !post.draft && !changed) continue;
-    const button = document.createElement("button");
-    button.className = "post-item";
-    button.setAttribute("aria-current", String(current?.path === post.path));
-    const title = document.createElement("strong");
-    title.textContent = post.title;
-    const status = document.createElement("small");
-    status.textContent = [
-      post.error ? "元数据需检查" : post.draft ? "草稿" : "仓库已发布",
-      changed ? "本地未发布修改" : "",
-      post.path.split("/").pop(),
-    ]
-      .filter(Boolean)
-      .join(" · ");
-    button.append(title, status);
-    button.onclick = () => {
-      void openPost(post.path).catch(failure);
-    };
-    button.disabled = publishing;
-    container.append(button);
-  }
-  if (!container.childElementCount) {
-    const empty = document.createElement("p");
-    empty.textContent = "没有匹配的文章";
-    container.append(empty);
+    let title = draft.path;
+    try {
+      title = String(splitMarkdown(draft.raw).metadata.title || title);
+    } catch {
+      /* Keep source editable. */
+    }
+    select.add(
+      new Option(`${title} · ${draft.path.split("/").pop()}`, draft.path)
+    );
   }
 }
-async function refresh() {
-  $("list-status").textContent = "正在读取仓库…";
-  try {
-    const data = await api<{ posts: Post[] }>("posts");
-    posts = data.posts;
-    $("list-status").textContent = `${posts.length} 篇仓库文章`;
-  } catch (e) {
-    $("list-status").textContent = "仓库读取失败，可继续编辑本地草稿";
-    failure(e);
-  }
-  renderList();
+let postPaths: Promise<Record<string, string>> | undefined;
+async function openLink() {
+  const revision = ++openRevision;
+  const route = articleRoute(
+    input("article-url").value,
+    document.body.dataset.publicOrigin!
+  );
+  postPaths ??= fetch("/admin/post-paths.json", {
+    credentials: "same-origin",
+    cache: "no-store",
+  })
+    .then(async response => {
+      if (
+        !response.ok ||
+        !response.headers.get("Content-Type")?.includes("application/json")
+      ) {
+        postPaths = undefined;
+        throw new Error(
+          "文章链接索引读取失败，请刷新页面重新登录；本地草稿仍可恢复。"
+        );
+      }
+      return response.json();
+    })
+    .catch(error => {
+      postPaths = undefined;
+      throw error;
+    });
+  const path = (await postPaths)[route];
+  if (revision !== openRevision || publishing) return;
+  if (!path)
+    throw new Error(
+      "该链接不是当前博客已构建的 Markdown 文章，请检查网址或等待部署完成。"
+    );
+  await openPost(validatePostPath(path), revision);
+}
+function selectView(mode: string) {
+  document.querySelector<HTMLElement>(".panes")!.dataset.view = mode;
+  for (const key of ["edit", "preview"])
+    $("view-" + key).setAttribute("aria-pressed", String(mode === key));
+  view.requestMeasure();
 }
 function formFromSource() {
   if (!current) return;
@@ -156,6 +139,10 @@ function formFromSource() {
   }
 }
 function resetObjectUrls() {
+  ++previewRevision;
+  $("preview").replaceChildren();
+  $("preview-title").textContent = "";
+  selectView("edit");
   for (const url of objectUrls.values()) URL.revokeObjectURL(url);
   objectUrls.clear();
   for (const image of current?.images || [])
@@ -185,14 +172,10 @@ async function preview() {
 }
 function queueSave() {
   clearTimeout(timer);
-  clearTimeout(previewTimer);
   $("save-status").textContent = "正在编辑…";
   timer = setTimeout(() => {
     void save().catch(failure);
   }, 600);
-  previewTimer = setTimeout(() => {
-    void preview();
-  }, 250);
 }
 async function save() {
   clearTimeout(timer);
@@ -207,7 +190,7 @@ async function save() {
       $("save-status").textContent =
         `已保存到当前浏览器 · ${new Date(snapshot.updatedAt).toLocaleTimeString("zh-CN")}`;
     }
-    renderList();
+    renderRecovery();
   } catch {
     $("save-status").textContent = "草稿保存失败，请立即导出备份";
     throw new Error(
@@ -218,7 +201,6 @@ async function save() {
 function loadDraft(draft: Draft) {
   switching = true;
   ++previewRevision;
-  clearTimeout(previewTimer);
   clearTimeout(pollTimer);
   current = structuredClone(draft);
   persistedRaw = drafts.has(draft.path) ? draft.raw : draft.baseRaw;
@@ -236,13 +218,14 @@ function loadDraft(draft: Draft) {
   $("unpublish").hidden = !draft.baseSha;
   formFromSource();
   resetObjectUrls();
-  renderList();
-  void preview();
+  selectView("edit");
+  $("preview").replaceChildren();
+  $("preview-title").textContent = "";
+  renderRecovery();
   if (draft.lastCommit) void poll(draft.lastCommit);
 }
-async function openPost(path: string) {
+async function openPost(path: string, revision = ++openRevision) {
   if (publishing) return;
-  const revision = ++openRevision;
   await save();
   if (revision !== openRevision || publishing) return;
   const draft = drafts.get(path);
@@ -335,7 +318,16 @@ function insert(text: string, suffix = "") {
 }
 function setBusy(value: boolean) {
   publishing = value;
-  for (const id of ["publish", "unpublish", "new", "remote", "image"])
+  for (const id of [
+    "publish",
+    "unpublish",
+    "new",
+    "remote",
+    "image",
+    "open-link",
+    "article-url",
+    "local-draft",
+  ])
     $<HTMLButtonElement>(id).disabled = value;
   $("metadata")
     .querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input,textarea")
@@ -346,7 +338,7 @@ function setBusy(value: boolean) {
       EditorView.editable.of(!value),
     ]),
   });
-  renderList();
+  renderRecovery();
 }
 async function publish(unpublish = false) {
   if (!current || publishing) return;
@@ -404,12 +396,10 @@ async function publish(unpublish = false) {
       failure(e);
     }
     resetObjectUrls();
-    void preview();
     $("deploy-status").textContent =
       `已提交 ${result.sha.slice(0, 7)}，等待构建部署`;
     message("文章已提交到仓库，部署完成后公开网站才会更新。");
     void poll(result.sha);
-    void refresh();
   } catch (e) {
     $("deploy-status").textContent =
       "发布未确认成功，本地修改已保留；重试前可读取远端比较。";
@@ -448,7 +438,6 @@ async function poll(sha: string, attempt = 0) {
       );
       current.publishedImages = [];
       resetObjectUrls();
-      void preview();
       void save().catch(failure);
     }
     if (["success", "failed", "superseded"].includes(data.state)) return;
@@ -534,10 +523,13 @@ async function init() {
   } catch (e) {
     failure(e);
   }
-  input("search").oninput = renderList;
-  $("filter").onchange = renderList;
-  $("refresh").onclick = () => {
-    void refresh();
+  $("open-form").onsubmit = event => {
+    event.preventDefault();
+    if (!publishing) void openLink().catch(failure);
+  };
+  $("local-draft").onchange = () => {
+    const path = $<HTMLSelectElement>("local-draft").value;
+    if (path && !publishing) void openPost(path).catch(failure);
   };
   $("save").onclick = () => {
     void save().catch(failure);
@@ -627,10 +619,8 @@ async function init() {
   };
   for (const mode of ["edit", "preview"])
     $("view-" + mode).onclick = () => {
-      document.querySelector<HTMLElement>(".panes")!.dataset.view = mode;
-      for (const key of ["edit", "preview"])
-        $("view-" + key).setAttribute("aria-pressed", String(mode === key));
-      view.requestMeasure();
+      selectView(mode);
+      if (mode === "preview") void preview();
     };
   $("new").onclick = () => {
     input("new-slug").value = "";
@@ -643,8 +633,13 @@ async function init() {
       const path = validatePostPath(
         `src/content/posts/${input("new-slug").value.trim()}.md`
       );
-      if (posts.some(p => p.path === path) || drafts.has(path))
+      if (drafts.has(path)) throw new Error("文件名已存在，请换一个名称");
+      try {
+        await api(`post?path=${encodeURIComponent(path)}`);
         throw new Error("文件名已存在，请换一个名称");
+      } catch (error) {
+        if (!(error instanceof ApiError && error.status === 404)) throw error;
+      }
       await save();
       const raw = joinMarkdown(
         {
@@ -686,6 +681,10 @@ async function init() {
     message("另一个后台标签页可能也在编辑，请避免同时修改同一篇文章。")
   );
   channel?.postMessage("opened");
-  await refresh();
+  renderRecovery();
+  const latest = [...drafts.values()].sort(
+    (a, b) => b.updatedAt - a.updatedAt
+  )[0];
+  if (latest) loadDraft(latest);
 }
 void init().catch(failure);

@@ -1,3 +1,4 @@
+import { articleRoute } from "../src/admin/article-url";
 import test, { type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
@@ -379,4 +380,39 @@ test("invalid dates cannot reach a GitHub mutation", async t => {
     400
   );
   assert.equal(calls.length, 0);
+});
+
+test("article links validate origin and route before URL normalization", () => {
+  const origin = "https://blog.zrhe2016.cc";
+  assert.equal(
+    articleRoute(`${origin}/posts/%E4%B8%AD%E6%96%87/?utm=x#heading`, origin),
+    "/posts/中文"
+  );
+  assert.equal(
+    articleRoute(`${origin}/posts/folder/article`, origin),
+    "/posts/folder/article"
+  );
+  for (const suffix of [
+    "/posts/../about",
+    "/posts/%2e%2e/about",
+    "/posts/foo%2fbar",
+    "/posts/foo%5cbar",
+    "/posts/%252e%252e/a",
+    "/posts/",
+    "/about",
+    "/posts//one",
+    "/posts/%zz",
+    "/posts/%00",
+  ])
+    assert.throws(() => articleRoute(origin + suffix, origin), suffix);
+  for (const url of [
+    "https://foreign.example/posts/one",
+    "https://blog.zrhe2016.cc.evil/posts/one",
+    "http://blog.zrhe2016.cc/posts/one",
+    origin.replace("://", "://user" + "@") + "/posts/one",
+    "https://blog.zrhe2016.cc:444/posts/one",
+    "/posts/one",
+    "javascript:alert(1)",
+  ])
+    assert.throws(() => articleRoute(url, origin), url);
 });
