@@ -10,6 +10,8 @@ Last verified: 2026-10-13 @ working tree
 - Homepage presentation uses the English UI, omits the hero section, and hides Posts, Tags, and Archives from the header navigation.
 - About omits contact details from its body; GitHub and email links are available through footer icons.
 - The site title is `zrhe2016`; post list cards display titles and dates without excerpts.
+- The homepage omits the Recent Posts heading and uses compact spacing and `YYYY-MM-DD` dates without calendar icons; other date displays keep their existing format.
+- Page navigation disables view-transition animations and named post-title/tag transitions.
 - `wrangler.jsonc` declares the static-assets Worker and branch preview configuration; deployment details are in the [migration reference](reference/bearblog-migration.md).
 
 ## Constraints

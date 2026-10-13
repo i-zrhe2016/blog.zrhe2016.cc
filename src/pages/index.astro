@@ -45,7 +45,7 @@ const homePath = getRelativeLocaleUrl(locale, "");
           </h2>
           <ul>
             {featuredPosts.map(data => (
-              <Card variant="h3" {...data} />
+              <Card variant="h3" compactDate {...data} />
             ))}
           </ul>
         </section>
@@ -54,20 +54,17 @@ const homePath = getRelativeLocaleUrl(locale, "");
 
     {
       recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.recentPosts}
-          </h2>
+        <section id="recent-posts" class="pt-6 pb-2">
           <ul>
             {recentPosts.slice(0, postsConfig.perIndex).map(data => (
-              <Card variant="h3" {...data} />
+              <Card variant="h3" compactDate {...data} />
             ))}
           </ul>
         </section>
       )
     }
 
-    <div class="my-8 text-center">
+    <div class="my-4 text-center">
       <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
         {t.home.allPosts}
         <IconArrowRight class="inline-block rtl:-rotate-180" />
