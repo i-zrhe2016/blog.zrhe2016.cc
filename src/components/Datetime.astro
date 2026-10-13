@@ -11,6 +11,7 @@ dayjs.extend(timezone);
 
 type Props = {
   class?: string;
+  compact?: boolean;
   size?: "sm" | "lg";
   pubDatetime: string | Date;
   timezone?: string;
@@ -20,6 +21,7 @@ type Props = {
 const {
   pubDatetime,
   modDatetime,
+  compact = false,
   size = "sm",
   class: className = "",
   timezone: postTimezone,
@@ -33,18 +35,22 @@ const datetime = dayjs(isModified ? modDatetime : pubDatetime).tz(
   postTimezone ?? config.site.timezone
 );
 
-const date = datetime.format("D MMM, YYYY");
+const date = datetime.format(compact ? "YYYY-MM-DD" : "D MMM, YYYY");
 ---
 
 <div
   class:list={["text-muted-foreground flex items-center gap-x-2", className]}
 >
-  <IconCalendar
-    class:list={[
-      "inline-block size-6 min-w-5.5",
-      { "scale-90": size === "sm" },
-    ]}
-  />
+  {
+    !compact && (
+      <IconCalendar
+        class:list={[
+          "inline-block size-6 min-w-5.5",
+          { "scale-90": size === "sm" },
+        ]}
+      />
+    )
+  }
   {
     isModified && (
       <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>

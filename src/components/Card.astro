@@ -1,19 +1,25 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getPostUrl } from "@/utils/getPostPaths";
-import { toTransitionName } from "@/utils/toTransitionName";
 import Datetime from "./Datetime.astro";
 
 type Props = {
+  compactDate?: boolean;
   variant?: "h2" | "h3";
 } & CollectionEntry<"posts">;
 
-const { variant: Heading = "h2", id, data, filePath } = Astro.props;
+const {
+  compactDate = false,
+  variant: Heading = "h2",
+  id,
+  data,
+  filePath,
+} = Astro.props;
 
 const { title, description, ...props } = data;
 ---
 
-<li class="my-6">
+<li class:list={[compactDate ? "my-3" : "my-6"]}>
   <a
     href={getPostUrl(id, filePath, Astro.currentLocale)}
     class:list={[
@@ -22,9 +28,9 @@ const { title, description, ...props } = data;
       "focus-visible:no-underline focus-visible:underline-offset-0",
     ]}
   >
-    <Heading transition:name={toTransitionName(id)}>
+    <Heading>
       {title}
     </Heading>
   </a>
-  <Datetime {...props} />
+  <Datetime {...props} compact={compactDate} />
 </li>
