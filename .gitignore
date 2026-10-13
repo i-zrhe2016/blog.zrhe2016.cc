@@ -31,3 +31,8 @@ public/pagefind
 
 # docker compose
 compose.override.yaml
+
+# Worker local configuration and output
+.dev.vars*
+!.dev.vars.example
+.wrangler/

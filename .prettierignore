@@ -2,6 +2,10 @@
 /*
 
 # Except these files & folders
+!/worker
+!/tests
+!wrangler.jsonc
+!pnpm-workspace.yaml
 !/src
 !/public
 !/.github

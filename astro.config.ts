@@ -8,15 +8,11 @@ import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { unified } from "@astrojs/markdown-remark";
-import remarkToc from "remark-toc";
-import remarkCollapse from "remark-collapse";
-import rehypeCallouts from "rehype-callouts";
 import {
-  transformerNotationDiff,
-  transformerNotationHighlight,
-  transformerNotationWordHighlight,
-} from "@shikijs/transformers";
-import { transformerFileName } from "./src/utils/transformers/fileName";
+  remarkPlugins,
+  rehypePlugins,
+  highlightTransformers,
+} from "./src/utils/markdown";
 import config from "./astro-paper.config";
 import remarkPlantuml from "./scripts/plantuml.mjs";
 
@@ -26,7 +22,9 @@ export default defineConfig({
     mdx(),
     sitemap({
       filter: page =>
-        config.features?.showArchives !== false || !page.endsWith("/archives/"),
+        !new URL(page).pathname.startsWith("/admin") &&
+        (config.features?.showArchives !== false ||
+          !page.endsWith("/archives/")),
     }),
   ],
   i18n: {
@@ -39,23 +37,14 @@ export default defineConfig({
   markdown: {
     processor: unified({
       smartypants: false,
-      remarkPlugins: [
-        remarkPlantuml,
-        remarkToc,
-        [remarkCollapse, { test: "Table of contents" }],
-      ],
-      rehypePlugins: [rehypeCallouts],
+      remarkPlugins: [remarkPlantuml, ...remarkPlugins],
+      rehypePlugins,
     }),
     shikiConfig: {
       themes: { light: "min-light", dark: "night-owl" },
       defaultColor: false,
       wrap: false,
-      transformers: [
-        transformerFileName({ style: "v2", hideDot: false }),
-        transformerNotationHighlight(),
-        transformerNotationWordHighlight(),
-        transformerNotationDiff({ matchAlgorithm: "v3" }),
-      ],
+      transformers: highlightTransformers,
     },
   },
   vite: {
