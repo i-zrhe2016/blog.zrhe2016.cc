@@ -13,6 +13,7 @@ import {
 } from "./content";
 import { readDrafts, writeDraft, type Draft } from "./storage";
 import { renderPreview } from "./preview";
+import { previewSource } from "./preview-source";
 import { articleRoute } from "./article-url";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) =>
@@ -155,19 +156,21 @@ async function preview() {
   const revision = ++previewRevision;
   if (!current) return;
   try {
-    const { metadata, body } = splitMarkdown(current.raw);
+    const { title, body } = previewSource(current.raw, input("title").value);
     const html = await renderPreview(body);
     if (revision !== previewRevision) return;
-    $("preview-title").textContent = String(metadata.title || "未命名文章");
+    $("preview-title").textContent = title;
     $("preview").innerHTML = html;
     for (const img of $("preview").querySelectorAll("img")) {
       const source = img.getAttribute("src") || "";
       if (objectUrls.has(source)) img.src = objectUrls.get(source)!;
     }
   } catch (e) {
-    if (revision === previewRevision)
+    if (revision === previewRevision) {
+      $("preview-title").textContent = "";
       $("preview").textContent =
         `预览暂不可用：${e instanceof Error ? e.message : e}`;
+    }
   }
 }
 function queueSave() {

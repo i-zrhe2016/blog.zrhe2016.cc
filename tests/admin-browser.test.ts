@@ -97,6 +97,104 @@ async function openFirst(page: Page) {
   );
 }
 test(
+  "browser: plain Markdown preview preserves source and cannot publish",
+  { timeout: 30_000 },
+  async () => {
+    const context = await browser.newContext();
+    try {
+      const page = await context.newPage();
+      const errors = await fixture(page);
+      let publishRequests = 0;
+      page.on("request", request => {
+        if (request.url().endsWith("/api/admin/publish")) publishRequests++;
+      });
+      await openFirst(page);
+      const source =
+        '# 纯正文\n\n**加粗**\n<script>window.__plainAttack=true</script>\n<img src="x" onerror="window.__plainAttack=true">\n[危险](javascript:alert(1))';
+      await page.locator(".cm-content").fill(source);
+      assert.equal(await page.locator("#preview").textContent(), "");
+      await page.locator("#view-preview").click();
+      await page.locator("#preview strong").waitFor();
+      assert.equal(await page.locator("#preview h1").textContent(), "纯正文");
+      assert.equal(
+        await page.locator("#preview-title").textContent(),
+        "第一篇"
+      );
+      assert.equal(
+        await page
+          .locator(
+            "#preview script, #preview [onerror], #preview a[href^='javascript:']"
+          )
+          .count(),
+        0
+      );
+      assert.equal(
+        await page.evaluate(() => (window as any).__plainAttack),
+        undefined
+      );
+      await page.locator("#publish").click();
+      await page.waitForFunction(() =>
+        document.querySelector("#notice")?.textContent?.includes("frontmatter")
+      );
+      assert.equal(publishRequests, 0);
+      await page.locator("#view-edit").click();
+      assert.equal(
+        (await page.locator(".cm-content .cm-line").allTextContents()).join(
+          "\n"
+        ),
+        source
+      );
+      const downloadPromise = page.waitForEvent("download");
+      await page.locator("#export").click();
+      const download = await downloadPromise;
+      const stream = await download.createReadStream();
+      const chunks: Buffer[] = [];
+      for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+      assert.equal(Buffer.concat(chunks).toString(), source);
+      await page.locator("#save").click();
+      await page.reload();
+      await page.locator(".cm-content").waitFor();
+      assert.equal(
+        (await page.locator(".cm-content .cm-line").allTextContents()).join(
+          "\n"
+        ),
+        source
+      );
+      assert.equal(await page.locator("#preview").textContent(), "");
+      await page.locator(".cm-content").fill(raw("恢复有效标题"));
+      await page.locator("#view-preview").click();
+      await page.waitForFunction(
+        () =>
+          document.querySelector("#preview-title")?.textContent ===
+          "恢复有效标题"
+      );
+      await page.locator("#view-edit").click();
+      await page
+        .locator(".cm-content")
+        .fill("---\ntitle: [\n---\n不得泄漏的正文");
+      await page.locator("#view-preview").click();
+      await page.waitForFunction(() =>
+        document
+          .querySelector("#preview")
+          ?.textContent?.includes("YAML 格式错误")
+      );
+      assert.equal(await page.locator("#preview-title").textContent(), "");
+      assert.equal(await page.locator("#preview h1, #preview p").count(), 0);
+      await page.locator("#publish").click();
+      await page.waitForFunction(() =>
+        document
+          .querySelector("#notice")
+          ?.textContent?.includes("YAML 格式错误")
+      );
+      assert.equal(publishRequests, 0);
+      assert.deepEqual(errors, []);
+    } finally {
+      await context.close();
+    }
+  }
+);
+
+test(
   "browser: Chinese edits, sanitized highlighted preview, drafts, images, new posts and mobile",
   { timeout: 60_000 },
   async () => {
