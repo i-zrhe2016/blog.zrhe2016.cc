@@ -1,4 +1,5 @@
 import { articleRoute } from "../src/admin/article-url";
+import { previewSource } from "../src/admin/preview-source";
 import test, { type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
@@ -13,6 +14,33 @@ import {
 } from "../src/admin/content";
 
 type Env = Parameters<typeof worker.fetch>[1];
+test("preview accepts plain bodies without relaxing publication metadata", () => {
+  const body = "\uFEFF\n# 标题\n\n**正文**";
+  assert.deepEqual(previewSource(body, " 表单标题 "), {
+    title: "表单标题",
+    body,
+  });
+  assert.equal(previewSource(body).title, "未命名文章");
+  const valid =
+    "---\ntitle: YAML 标题\ndescription: 摘要\npubDatetime: 2026-10-01\n---\n正文";
+  assert.deepEqual(previewSource(valid, "表单标题"), {
+    title: "YAML 标题",
+    body: "正文",
+  });
+  assert.deepEqual(previewSource("\uFEFF\n  " + valid), previewSource(valid));
+  for (const invalid of [
+    body,
+    "\uFEFF\n" + valid,
+    "---\ntitle: [\n---\n正文",
+    "---\ntitle: 未关闭",
+  ])
+    assert.throws(() => validateMarkdown(invalid));
+  assert.throws(
+    () => previewSource("---\ntitle: [\n---\n正文"),
+    /YAML 格式错误/
+  );
+  assert.throws(() => previewSource("---\ntitle: 未关闭"), /frontmatter/);
+});
 const path = "src/content/posts/hello.md";
 const oldRaw = joinMarkdown(
   {
