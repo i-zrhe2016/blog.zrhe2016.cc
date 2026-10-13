@@ -1,14 +1,13 @@
 ---
-title: "自己开发的 Agent Harness：Codex Development Workflow"
+title: "自己开发的agent harness"
 description: "一套面向 Codex 与 Claude Code 的多 Agent 软件开发工作流，集成需求分析、任务编排、并行开发、独立验证、质量门禁、GitHub 交付与 Skill Eval。"
 pubDatetime: 2026-10-12T11:59:00Z
 tags: ["AI", "Codex", "Agent", "Workflow", "Software Engineering"]
 draft: false
 ---
 
-自己在使用 Codex 的过程中，由于前期模型能力有限，做出的产品常常不符合预期。于是自己编写了一套 Workflow，将需求分析、开发、测试、验证与模型编排调度集成到一起。
+自己在使用codex过程中，由于前期模型能力有限，做出的产品常常不符合预期。于是自己编写了一套workflow，将需求分析，开发，测试，验证与模型编排调度集成到一起。本项目经过100+pr的迭代更新，可以稳定的实现各种需求，保证想法和做出的产品效果一致。
 
-本项目经过 100+ PR 的迭代更新，逐步形成了一套完整的软件工程工作流，目标是让 AI 开发的产品更符合最初的需求，同时保证开发过程可靠、可控、可恢复。
 
 ## Codex Development Workflow
 
