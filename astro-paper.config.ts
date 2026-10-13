@@ -3,7 +3,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 export default defineAstroPaperConfig({
   site: {
     url: "https://blog.zrhe2016.cc/",
-    title: "My blog",
+    title: "zrhe2016",
     description: "只写有意思的。技术、工具与日常记录。",
     author: "zrhe2016",
     profile: "https://github.com/i-zrhe2016",

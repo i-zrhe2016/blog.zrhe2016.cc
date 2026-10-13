@@ -8,6 +8,7 @@ Last verified: 2026-10-13 @ working tree
 - Imported post code blocks use theme-aware colors and preserve source whitespace when copied; see the [migration reference](reference/bearblog-migration.md).
 - Chinese site metadata, Pagefind article search, RSS and sitemap are configured for `blog.zrhe2016.cc`.
 - Homepage presentation uses the English UI, omits the hero section, and hides Posts and Archives from the header navigation.
+- The site title is `zrhe2016`; post list cards display titles and dates without excerpts.
 - `wrangler.jsonc` declares the static-assets Worker and branch preview configuration; deployment details are in the [migration reference](reference/bearblog-migration.md).
 
 ## Constraints
