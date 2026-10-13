@@ -21,6 +21,9 @@ export default defineAstroPaperConfig({
     editPost: { enabled: false },
     search: "pagefind",
   },
-  socials: [{ name: "github", url: "https://github.com/i-zrhe2016" }],
+  socials: [
+    { name: "github", url: "https://github.com/i-zrhe2016" },
+    { name: "mail", url: "mailto:zrhe2016@gmail.com" },
+  ],
   shareLinks: [],
 });
