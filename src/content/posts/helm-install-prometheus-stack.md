@@ -6,5 +6,5 @@ tags: []
 draft: false
 ---
 
-<p>k8s-monitoring-helm
-<a href="https://asciinema.org/a/l5X7zIZwWBKFWox57D92Delf2"><img alt="asciicast" src="/images/bearblog/7449175016dab1047dc6.svg"/></a></p>
+k8s-monitoring-helm
+[![asciicast](/images/bearblog/7449175016dab1047dc6.svg)](https://asciinema.org/a/l5X7zIZwWBKFWox57D92Delf2)

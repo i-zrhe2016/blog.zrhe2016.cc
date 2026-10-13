@@ -6,9 +6,10 @@ tags: []
 draft: false
 ---
 
-<p>获取当前时间并按指定格式显示</p>
+获取当前时间并按指定格式显示
 
-<pre><span></span>package main
+```text
+package main
 
 import (
 	"fmt"
@@ -20,9 +21,7 @@ func main() {
 
 	fmt.Println("执行完毕，请按回车键退出...")
 	var input string
-	fmt.Scanln(&amp;input) // 等待用户输入
+	fmt.Scanln(&input) // 等待用户输入
 }
-</pre>
 
-
-
+```

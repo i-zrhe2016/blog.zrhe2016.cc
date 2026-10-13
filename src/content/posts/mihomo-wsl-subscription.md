@@ -6,7 +6,8 @@ tags: []
 draft: false
 ---
 
-<pre><span></span>#!/usr/bin/env bash
+```text
+#!/usr/bin/env bash
 # WSL 2 Ubuntu: 独立 Mihomo TUN 安装器，不依赖 Windows Clash。
 # 用法: sudo bash mihomo-wsl-subscription.sh [install|start|stop|restart|status|logs|check]
 # 默认使用 https://ghproxy.imciel.com/；可选 GH_MIRROR=direct 使用 GitHub 官方
@@ -14,8 +15,8 @@ set -Eeuo pipefail
 umask 077
 
 info() { printf '\033[1;34m[信息]\033[0m %s\n' "$*"; }
-warn() { printf '\033[1;33m[提醒]\033[0m %s\n' "$*" &gt;&amp;2; }
-die()  { printf '\033[1;31m[错误]\033[0m %s\n' "$*" &gt;&amp;2; exit 1; }
+warn() { printf '\033[1;33m[提醒]\033[0m %s\n' "$*" >&2; }
+die()  { printf '\033[1;31m[错误]\033[0m %s\n' "$*" >&2; exit 1; }
 need_root() { [[ "$(id -u)" -eq 0 ]] || die '请用 sudo bash mihomo-wsl-subscription.sh 运行'; }
 
 COMMAND="${1:-install}"
@@ -32,7 +33,7 @@ case "$COMMAND" in
       check)
         unset http_proxy https_proxy all_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY no_proxy NO_PROXY || true
         systemctl is-active --quiet mihomo || die 'Mihomo 服务未运行'
-        ip link show mihomo-tun &gt;/dev/null 2&gt;&amp;1 || die 'TUN 网卡不存在'
+        ip link show mihomo-tun >/dev/null 2>&1 || die 'TUN 网卡不存在'
         printf 'HTTP 代理出口：'
         curl --noproxy '' -4 -x http://127.0.0.1:7890 --connect-timeout 8 --max-time 25 -fsS https://api.ipify.org || die 'HTTP 代理联网失败'
         printf '\nTUN 透明代理出口：'
@@ -55,13 +56,13 @@ esac
 . /etc/os-release
 [[ "${ID:-}" == ubuntu ]] || die "这是 Ubuntu 专用版，当前系统：${PRETTY_NAME:-unknown}"
 IS_WSL=0
-if grep -qiE 'microsoft|wsl' /proc/sys/kernel/osrelease 2&gt;/dev/null; then
+if grep -qiE 'microsoft|wsl' /proc/sys/kernel/osrelease 2>/dev/null; then
   IS_WSL=1
 fi
 
 # 修改 wsl.conf 的现有分组，避免重复 [network]、[boot]。
 ini_set() {
-  python3 - "$1" "$2" "$3" &lt;&lt;'PY_INI'
+  python3 - "$1" "$2" "$3" <<'PY_INI'
 from pathlib import Path
 import re, sys
 section, key, value = sys.argv[1:]
@@ -86,10 +87,10 @@ PY_INI
 
 if [[ ! -d /run/systemd/system ]]; then
   if [[ "$IS_WSL" == 1 ]]; then
-    if [[ -f /etc/wsl.conf &amp;&amp; ! -f /etc/wsl.conf.before-mihomo ]]; then
+    if [[ -f /etc/wsl.conf && ! -f /etc/wsl.conf.before-mihomo ]]; then
       cp -a /etc/wsl.conf /etc/wsl.conf.before-mihomo
     fi
-    command -v python3 &gt;/dev/null || die "请先安装 python3：sudo apt-get install -y python3"
+    command -v python3 >/dev/null || die "请先安装 python3：sudo apt-get install -y python3"
     ini_set boot systemd true
     die $'已为 WSL Ubuntu 写入 [boot] systemd=true。请在 Windows PowerShell 执行：wsl --shutdown，然后重新进入 Ubuntu，再运行本脚本。'
   fi
@@ -102,7 +103,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y \
   ca-certificates curl gzip python3 python3-yaml iproute2 iptables nftables kmod
 
 if [[ ! -c /dev/net/tun ]]; then
-  modprobe tun 2&gt;/dev/null || true
+  modprobe tun 2>/dev/null || true
 fi
 [[ -c /dev/net/tun ]] || die '找不到 /dev/net/tun，请检查 WSL2 内核是否启用 TUN 设备'
 
@@ -134,7 +135,7 @@ if curl --fail --silent --show-error --location --retry 1 \
     -H 'Accept: application/vnd.github+json' \
     'https://api.github.com/repos/MetaCubeX/mihomo/releases/latest' \
     -o "$TMP_DIR/release.json"; then
-  if ! python3 - "$TMP_DIR/release.json" "$ARCH_TAG" &gt; "$TMP_DIR/asset.txt" &lt;&lt;'PY_RELEASE'
+  if ! python3 - "$TMP_DIR/release.json" "$ARCH_TAG" > "$TMP_DIR/asset.txt" <<'PY_RELEASE'
 import json, sys
 with open(sys.argv[1], encoding='utf-8') as f:
     data = json.load(f)
@@ -151,14 +152,14 @@ print(asset['name'])
 PY_RELEASE
   then
     warn '官方 API 返回的数据无法解析，使用预校验版本'
-    : &gt; "$TMP_DIR/asset.txt"
+    : > "$TMP_DIR/asset.txt"
   fi
 else
   warn 'GitHub API 暂时无法连接，使用预校验版本（无需连接 GitHub API）'
-  : &gt; "$TMP_DIR/asset.txt"
+  : > "$TMP_DIR/asset.txt"
 fi
 
-mapfile -t ASSET &lt; "$TMP_DIR/asset.txt"
+mapfile -t ASSET < "$TMP_DIR/asset.txt"
 ASSET_URL="${ASSET[0]:-}"
 ASSET_DIGEST="${ASSET[1]:-}"
 ASSET_NAME="${ASSET[2]:-}"
@@ -192,7 +193,7 @@ PART_FILE="${CACHE_DIR}/${ASSET_NAME}.${EXPECTED_SHA256}.part"
 
 info "准备下载 ${ASSET_NAME}（ghproxy.imciel.com 优先、可断点续传、SHA256 校验）..."
 DOWNLOAD_OK=0
-if [[ -s "$PART_FILE" ]] &amp;&amp; printf '%s  %s\n' "$EXPECTED_SHA256" "$PART_FILE" | sha256sum --check --status; then
+if [[ -s "$PART_FILE" ]] && printf '%s  %s\n' "$EXPECTED_SHA256" "$PART_FILE" | sha256sum --check --status; then
   info '安装包已完整缓存且 SHA256 校验通过，无需重复下载'
   DOWNLOAD_OK=1
 else
@@ -208,12 +209,12 @@ else
     # 网络失败时保留 .part：下一次尝试或再次运行脚本可继续下载。
     # 不设 90 秒总超时；仅在 120 秒持续低于 1 KiB/s 时重试。
     for ATTEMPT in 1 2 3 4; do
-      info "下载尝试 ${ATTEMPT}/4；已缓存 $(stat -c %s "$PART_FILE" 2&gt;/dev/null || echo 0) 字节"
+      info "下载尝试 ${ATTEMPT}/4；已缓存 $(stat -c %s "$PART_FILE" 2>/dev/null || echo 0) 字节"
       if curl --fail --location --show-error --continue-at - \
           --connect-timeout 15 --max-time 0 \
           --speed-time 120 --speed-limit 1024 \
           --proto '=https' --proto-redir '=https' \
-          "$URL" -o "$PART_FILE" 2&gt; &gt;(tee "$TMP_DIR/curl-error.log" &gt;&amp;2); then
+          "$URL" -o "$PART_FILE" 2> >(tee "$TMP_DIR/curl-error.log" >&2); then
         if printf '%s  %s\n' "$EXPECTED_SHA256" "$PART_FILE" | sha256sum --check --status; then
           DOWNLOAD_OK=1
           info "下载完成，SHA256 校验通过：${LABEL}"
@@ -222,7 +223,7 @@ else
         warn "${LABEL} 返回的文件 SHA256 不匹配，删除损坏的缓存"
         rm -f "$PART_FILE"
       else
-        cat "$TMP_DIR/curl-error.log" &gt;&amp;2
+        cat "$TMP_DIR/curl-error.log" >&2
         # 部分国内镜像不支持 HTTP Range，无法续传时从头重新下载。
         if grep -Eiq 'range|resume|requested range|HTTP server does not seem to support' "$TMP_DIR/curl-error.log"; then
           warn '镜像不支持断点续传，清除部分文件，下次从头下载'
@@ -242,7 +243,7 @@ fi
 cp "$PART_FILE" "$TMP_DIR/mihomo.gz"
 
 gzip -t "$TMP_DIR/mihomo.gz"
-gzip -dc "$TMP_DIR/mihomo.gz" &gt; "$TMP_DIR/mihomo"
+gzip -dc "$TMP_DIR/mihomo.gz" > "$TMP_DIR/mihomo"
 chmod +x "$TMP_DIR/mihomo"
 install -m 0755 "$TMP_DIR/mihomo" /usr/local/bin/mihomo
 mihomo -v
@@ -254,9 +255,9 @@ if [[ -z "$SUB_URL" ]]; then
   read -r -s -p '请输入 Clash/Mihomo 订阅地址：' SUB_URL
   printf '\n'
 fi
-printf '%s' "$SUB_URL" &gt; "$TMP_DIR/sub-url"
+printf '%s' "$SUB_URL" > "$TMP_DIR/sub-url"
 unset SUB_URL
-python3 - "$TMP_DIR/sub-url" "$TMP_DIR/curl.conf" &lt;&lt;'PY_URL'
+python3 - "$TMP_DIR/sub-url" "$TMP_DIR/curl.conf" <<'PY_URL'
 import sys, json
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -275,10 +276,10 @@ if ! curl --config "$TMP_DIR/curl.conf" --fail --silent --location \
     --connect-timeout 10 --max-time 60 --max-filesize 10485760 \
     --proto '=https' --proto-redir '=https' \
     -A 'clash.meta' -D "$TMP_DIR/sub-headers" \
-    -o "$TMP_DIR/subscription.yaml" 2&gt; "$TMP_DIR/sub-error"; then
+    -o "$TMP_DIR/subscription.yaml" 2> "$TMP_DIR/sub-error"; then
   die '订阅下载失败：请核对地址、有效期和网络。现有配置未修改'
 fi
-python3 - "$TMP_DIR" &lt;&lt;'PY_SUB'
+python3 - "$TMP_DIR" <<'PY_SUB'
 import sys, json, re
 from pathlib import Path
 from datetime import datetime, timezone
@@ -294,7 +295,7 @@ try:
             sys.exit('订阅存在缺失 name/type/server/port 的节点')
         if not isinstance(n['name'],str) or n['name'] in names:
             sys.exit('订阅节点名称重复或无效')
-        if not isinstance(n['port'],int) or isinstance(n['port'],bool) or not 1&lt;=n['port']&lt;=65535:
+        if not isinstance(n['port'],int) or isinstance(n['port'],bool) or not 1<=n['port']<=65535:
             sys.exit('订阅存在无效节点端口')
         if n.get('dialer-proxy'):
             sys.exit('订阅含链式代理引用，无法独立提取节点；请使用普通节点订阅')
@@ -309,12 +310,12 @@ try:
         if 'total' in data and 'upload' in data and 'download' in data:
             used=data['upload']+data['download']; total=data['total']
             print(f'订阅流量：已用 {used/1024**3:.2f} GiB，总量 {total/1024**3:.2f} GiB')
-            if total&gt;0 and used&gt;=total:
+            if total>0 and used>=total:
                 sys.exit('订阅流量已用尽，请更新订阅后重试')
-        if data.get('expire',0)&gt;0:
+        if data.get('expire',0)>0:
             expiry=data['expire']
             print('订阅到期时间（UTC）：'+datetime.fromtimestamp(expiry,timezone.utc).strftime('%Y-%m-%d %H:%M:%S'))
-            if expiry&lt;=datetime.now(timezone.utc).timestamp():
+            if expiry<=datetime.now(timezone.utc).timestamp():
                 sys.exit('订阅已过期')
     else:
         print('订阅未提供流量/到期响应头，仅检测节点内容')
@@ -352,7 +353,7 @@ info '检查订阅节点及候选配置...'
 install -d -m 0700 "$TMP_DIR/test-config/providers"
 install -m 0600 "$TMP_DIR/config.yaml" "$TMP_DIR/test-config/config.yaml"
 install -m 0600 "$TMP_DIR/subscription.yaml" "$TMP_DIR/test-config/providers/subscription.yaml"
-if ! mihomo -t -d "$TMP_DIR/test-config" &gt; "$TMP_DIR/config-test.log" 2&gt;&amp;1; then
+if ! mihomo -t -d "$TMP_DIR/test-config" > "$TMP_DIR/config-test.log" 2>&1; then
   die 'Mihomo 配置检查失败：订阅节点参数错误或版本不支持。现有配置未修改'
 fi
 install -d -m 0700 /etc/mihomo/providers
@@ -363,7 +364,7 @@ if [[ -f /etc/mihomo/config.yaml ]]; then
 fi
 # 使用独立缓存文件，避免失败时覆盖原订阅缓存。
 PROVIDER_FILE="providers/subscription.$(date +%s).yaml"
-python3 - "$TMP_DIR/config.yaml" "$PROVIDER_FILE" &lt;&lt;'PY_CACHE'
+python3 - "$TMP_DIR/config.yaml" "$PROVIDER_FILE" <<'PY_CACHE'
 import json,sys
 from pathlib import Path
 p=Path(sys.argv[1]); cfg=json.loads(p.read_text())
@@ -375,13 +376,13 @@ install -m 0600 "$TMP_DIR/config.yaml" /etc/mihomo/config.yaml
 
 info '创建 systemd 服务...'
 # Ubuntu 的 resolv.conf 可能是符号链接：恢复时保留链接类型。
-cat &gt; /usr/local/sbin/mihomo-wsl-dns &lt;&lt;'DNSHELPER'
+cat > /usr/local/sbin/mihomo-wsl-dns <<'DNSHELPER'
 #!/usr/bin/env bash
 set -e
 case "${1:-}" in
   up)
     rm -f /etc/resolv.conf
-    printf 'nameserver 127.0.0.1\noptions timeout:2 attempts:2\n' &gt; /etc/resolv.conf
+    printf 'nameserver 127.0.0.1\noptions timeout:2 attempts:2\n' > /etc/resolv.conf
     ;;
   down)
     if [[ -e /etc/mihomo/resolv.conf.before-mihomo || -L /etc/mihomo/resolv.conf.before-mihomo ]]; then
@@ -394,7 +395,7 @@ esac
 DNSHELPER
 chmod 0755 /usr/local/sbin/mihomo-wsl-dns
 
-cat &gt; /etc/systemd/system/mihomo.service &lt;&lt;'UNIT'
+cat > /etc/systemd/system/mihomo.service <<'UNIT'
 [Unit]
 Description=Mihomo TUN for WSL 2 Ubuntu
 Wants=network-online.target
@@ -416,13 +417,13 @@ UNIT
 # WSL 环境：禁用自动生成 resolv.conf，避免自动 DNS 隧道绕过本地 DNS。
 # 原生 Ubuntu 不修改 /etc/wsl.conf。
 info '备份 Ubuntu 的 DNS 配置...'
-if [[ ! -e /etc/mihomo/resolv.conf.before-mihomo &amp;&amp; ! -L /etc/mihomo/resolv.conf.before-mihomo ]]; then
+if [[ ! -e /etc/mihomo/resolv.conf.before-mihomo && ! -L /etc/mihomo/resolv.conf.before-mihomo ]]; then
   if [[ -e /etc/resolv.conf || -L /etc/resolv.conf ]]; then
     cp -a /etc/resolv.conf /etc/mihomo/resolv.conf.before-mihomo
   fi
 fi
 if [[ "$IS_WSL" == 1 ]]; then
-  if [[ -f /etc/wsl.conf &amp;&amp; ! -f /etc/wsl.conf.before-mihomo ]]; then
+  if [[ -f /etc/wsl.conf && ! -f /etc/wsl.conf.before-mihomo ]]; then
     cp -a /etc/wsl.conf /etc/wsl.conf.before-mihomo
   fi
   ini_set network generateResolvConf false
@@ -447,10 +448,10 @@ fi
 
 info '服务已启动，验证实际联网...'
 CHECK_OK=1
-ip link show mihomo-tun &gt;/dev/null 2&gt;&amp;1 || CHECK_OK=0
+ip link show mihomo-tun >/dev/null 2>&1 || CHECK_OK=0
 HTTP_IP="$(curl --noproxy '' -4 -x http://127.0.0.1:7890 --connect-timeout 8 --max-time 25 -fsS https://api.ipify.org || true)"
 TUN_IP="$(curl --noproxy '*' -4 --connect-timeout 8 --max-time 25 -fsS https://api.ipify.org || true)"
-if [[ -n "$HTTP_IP" &amp;&amp; -n "$TUN_IP" &amp;&amp; "$CHECK_OK" == 1 ]]; then
+if [[ -n "$HTTP_IP" && -n "$TUN_IP" && "$CHECK_OK" == 1 ]]; then
   info "HTTP 出口：$HTTP_IP；TUN 出口：$TUN_IP，请核对是否属于订阅节点"
 else
   warn '服务运行，但联网验证未通过，不能认定部署成功'
@@ -472,7 +473,5 @@ warn '这不是防泄漏 Kill Switch：启动前或 TUN 故障时可能直连；
 warn '如果 .bashrc 内曾设 Windows Clash 的 http_proxy/https_proxy，请手动删除它们。'
 
 [[ "${CHECK_OK:-1}" == 1 ]] || exit 1
-</pre>
 
-
-
+```

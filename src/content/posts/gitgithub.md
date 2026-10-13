@@ -6,14 +6,13 @@ tags: []
 draft: false
 ---
 
-<pre><span></span>chmod 600 ./key
+```text
+chmod 600 ./key
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/key
 ssh -T git@github.com
 
 git config --global user.name "zrhe2016"
 git config --global user.email "zrhe2016@gmail.com"
-</pre>
 
-
-
+```

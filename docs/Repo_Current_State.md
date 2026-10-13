@@ -22,3 +22,5 @@ Last verified: 2026-10-13 @ working tree
 ## Architecture Snapshot
 
 - Astro content collections render Markdown posts and About, with public local images and static search assets.
+
+- All posts and About use editable Markdown; migration validation preserves code whitespace and source text.

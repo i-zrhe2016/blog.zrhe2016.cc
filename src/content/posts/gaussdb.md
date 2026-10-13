@@ -6,7 +6,8 @@ tags: []
 draft: false
 ---
 
-<pre><span></span>#!/bin/bash
+```text
+#!/bin/bash
 
 print_header() {
     echo "=============================="
@@ -66,7 +67,7 @@ run_gsql() {
 test_connection() {
     echo "正在测试数据库连接..."
 
-    if run_gsql postgres -c "SELECT 1;" &gt;/dev/null 2&gt;&amp;1; then
+    if run_gsql postgres -c "SELECT 1;" >/dev/null 2>&1; then
         echo "✅ 数据库连接成功"
         echo
         return 0
@@ -107,7 +108,7 @@ create_user_and_grant() {
     echo
     read -p "请输入授权数据库名: " auth_db
 
-    if run_gsql postgres &lt;&lt;EOF
+    if run_gsql postgres <<EOF
 DO \$\$
 BEGIN
    IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = '$new_user') THEN
@@ -233,13 +234,13 @@ main() {
 }
 
 main "$@"
-</pre>
 
+```
 
+mysql
 
-<p>mysql</p>
-
-<pre><span></span>#!/bin/bash
+```text
+#!/bin/bash
 
 print_header() {
     echo "=============================="
@@ -302,7 +303,7 @@ run_mysql() {
 test_connection() {
     echo "正在测试数据库连接..."
 
-    if run_mysql "" -e "SELECT 1;" &gt;/dev/null 2&gt;&amp;1; then
+    if run_mysql "" -e "SELECT 1;" >/dev/null 2>&1; then
         echo "✅ 数据库连接成功"
         echo
         return 0
@@ -358,7 +359,7 @@ create_user_and_grant() {
         return
     fi
 
-    if run_mysql "" &lt;&lt;EOF
+    if run_mysql "" <<EOF
 CREATE USER IF NOT EXISTS '$new_user'@'%' IDENTIFIED BY '$new_user_pass';
 GRANT ALL PRIVILEGES ON \`$auth_db\`.* TO '$new_user'@'%';
 FLUSH PRIVILEGES;
@@ -386,7 +387,7 @@ export_database() {
 
     echo "正在导出数据库 [$export_db]..."
 
-    if "$MYSQLDUMP_BIN" -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" "$export_db" &gt; "$export_file"; then
+    if "$MYSQLDUMP_BIN" -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" "$export_db" > "$export_file"; then
         echo "✅ 导出成功: $export_file"
         echo "📦 大小: $(du -sh "$export_file" | cut -f1)"
     else
@@ -407,7 +408,7 @@ execute_sql_file() {
 
     echo "正在执行 SQL..."
 
-    if run_mysql "$target_db" &lt; "$sql_file"; then
+    if run_mysql "$target_db" < "$sql_file"; then
         echo "✅ 执行完成"
     else
         echo "❌ 执行失败"
@@ -449,14 +450,12 @@ main() {
         read -p "请输入选项 [1-7]: " choice
 
         handle_choice "$choice"
-        [ "$?" -eq 10 ] &amp;&amp; continue
+        [ "$?" -eq 10 ] && continue
 
         echo
     done
 }
 
 main "$@"
-</pre>
 
-
-
+```

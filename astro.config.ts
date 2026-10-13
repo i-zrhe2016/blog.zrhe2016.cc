@@ -37,6 +37,7 @@ export default defineConfig({
   },
   markdown: {
     processor: unified({
+      smartypants: false,
       remarkPlugins: [
         remarkToc,
         [remarkCollapse, { test: "Table of contents" }],

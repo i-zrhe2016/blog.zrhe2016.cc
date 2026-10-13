@@ -6,17 +6,19 @@ tags: []
 draft: false
 ---
 
-<p>Bark是一款运行在iOS上的推送工具，可以通过简单的 HTTP 请求把消息推送到手机</p>
-<p>Bark 推送格式非常简单：</p>
+Bark是一款运行在iOS上的推送工具，可以通过简单的 HTTP 请求把消息推送到手机
 
-<pre><span></span>https://api.day.app/&lt;your_key&gt;/&lt;title&gt;/&lt;message&gt;
-</pre>
+Bark 推送格式非常简单：
 
+```text
+https://api.day.app/<your_key>/<title>/<message>
 
+```
 
-<p>写一个倒计时脚本</p>
+写一个倒计时脚本
 
-<pre><span></span>import time
+```text
+import time
 import datetime
 import requests
 
@@ -49,8 +51,7 @@ def countdown(seconds: int = 300, title: str = "提醒", body: str = "倒计时�
 if __name__ == "__main__":
     # 默认倒计时 5 分钟（300 秒）
     countdown(300, "倒计时提醒", "时间到了！")
-</pre>
 
+```
 
-
-<p>通过bark和python脚本的结合可以在任意想要执行的任务完成后发送通知到手机</p>
+通过bark和python脚本的结合可以在任意想要执行的任务完成后发送通知到手机

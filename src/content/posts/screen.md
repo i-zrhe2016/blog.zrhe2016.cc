@@ -6,31 +6,30 @@ tags: []
 draft: false
 ---
 
-<p>创建新会话</p>
+创建新会话
 
-<pre><span></span>screen -S &lt;name&gt;  
-</pre>
+```text
+screen -S <name>  
 
+```
 
+列出所有会话
 
-<p>列出所有会话</p>
+```text
+screen -ls  
 
-<pre><span></span>screen -ls  
-</pre>
+```
 
+恢复指定会话
 
+```text
+screen -r <id>/<name>  
 
-<p>恢复指定会话</p>
+```
 
-<pre><span></span>screen -r &lt;id&gt;/&lt;name&gt;  
-</pre>
+强制分离并重新连接
 
+```text
+screen -d -r 451386.new1
 
-
-<p>强制分离并重新连接</p>
-
-<pre><span></span>screen -d -r 451386.new1
-</pre>
-
-
-
+```

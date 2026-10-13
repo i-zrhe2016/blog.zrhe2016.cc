@@ -6,23 +6,38 @@ tags: []
 draft: false
 ---
 
-<p>启动时：</p>
-<p>依次选择两个监控区域（box_watch_1、box_watch_2）</p>
-<p>选择完会截图预览</p>
-<p>监控时：</p>
-<p>每隔 3s 截两块区域，计算 pHash：</p>
-<p>每次都存图，保留最近 20 张。</p>
-<p>第一次拿到图时会建立 base_sig1/2 作为“基准签名”。</p>
-<p>后续每一帧与基准比对海明距离：</p>
-<p>距离 &gt; 6 就认为内容变化</p>
-<p>任一区域变化：</p>
-<p>控制台打印“异常 + 详情”</p>
-<p>开启一个线程等待按下回车</p>
-<p>在你没按回车之前，每隔 5s 发送本地 Toast（或打印失败信息）</p>
-<p>回车后：<br/>
-重置基准 ，下一轮采样会用当前画面作为新的基准继续</p>
+启动时：
 
-<pre><span></span>#!/usr/bin/env python3
+依次选择两个监控区域（box_watch_1、box_watch_2）
+
+选择完会截图预览
+
+监控时：
+
+每隔 3s 截两块区域，计算 pHash：
+
+每次都存图，保留最近 20 张。
+
+第一次拿到图时会建立 base_sig1/2 作为“基准签名”。
+
+后续每一帧与基准比对海明距离：
+
+距离 > 6 就认为内容变化
+
+任一区域变化：
+
+控制台打印“异常 + 详情”
+
+开启一个线程等待按下回车
+
+在你没按回车之前，每隔 5s 发送本地 Toast（或打印失败信息）
+
+回车后：
+
+重置基准 ，下一轮采样会用当前画面作为新的基准继续
+
+```text
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from __future__ import annotations
@@ -136,7 +151,7 @@ def ensure_dir(p: Path):
 
 def maintain_max_files(cap_dir: Path, max_files: int):
     files = sorted(cap_dir.glob("*.png"), key=lambda f: f.stat().st_mtime)
-    while len(files) &gt; max_files:
+    while len(files) > max_files:
         try:
             files.pop(0).unlink(missing_ok=True)
         except:
@@ -150,7 +165,7 @@ def save_image(img: Image.Image, cap_dir: Path, name: str):
 
 def grab_region(sct: mss.mss, bbox):
     left, top, w, h = bbox
-    if w &lt;= 0 or h &lt;= 0:
+    if w <= 0 or h <= 0:
         print(f"[警告] 非法 bbox：{bbox}")
         return None
 
@@ -178,7 +193,7 @@ def hamming_distance64(a, b):
     x = a ^ b
     cnt = 0
     while x:
-        x &amp;= x - 1
+        x &= x - 1
         cnt += 1
     return cnt
 
@@ -193,7 +208,7 @@ def content_changed(curr, base, cfg):
     if curr.phash is None or base.phash is None:
         return False, "pHash 不可用", None
     dist = hamming_distance64(curr.phash, base.phash)
-    return (dist &gt; cfg.phash_max_distance,
+    return (dist > cfg.phash_max_distance,
             f"海明距离 {dist}",
             dist)
 
@@ -211,8 +226,8 @@ def get_pointer_xy():
 def get_monitor_of_point(x, y):
     with mss.mss() as sct:
         for mon in sct.monitors[1:]:
-            if mon["left"] &lt;= x &lt; mon["left"] + mon["width"] \
-            and mon["top"] &lt;= y &lt; mon["top"] + mon["height"]:
+            if mon["left"] <= x < mon["left"] + mon["width"] \
+            and mon["top"] <= y < mon["top"] + mon["height"]:
                 return mon
         return sct.monitors[0]
 
@@ -235,10 +250,10 @@ class BoxSelector:
         self.rect = None
         self.start_x = self.start_y = None
 
-        self.canvas.bind("&lt;Button-1&gt;", self.on_press)
-        self.canvas.bind("&lt;B1-Motion&gt;", self.on_drag)
-        self.canvas.bind("&lt;ButtonRelease-1&gt;", self.on_release)
-        self.root.bind("&lt;Escape&gt;", self.on_escape)
+        self.canvas.bind("<Button-1>", self.on_press)
+        self.canvas.bind("<B1-Motion>", self.on_drag)
+        self.canvas.bind("<ButtonRelease-1>", self.on_release)
+        self.root.bind("<Escape>", self.on_escape)
 
         self.result = None
 
@@ -270,7 +285,7 @@ class BoxSelector:
         top = min(self.start_y, e.y_root)
         w = abs(e.x_root - self.start_x)
         h = abs(e.y_root - self.start_y)
-        if w &gt; 0 and h &gt; 0:
+        if w > 0 and h > 0:
             self.result = (left, top, w, h)
         self.root.destroy()
 
@@ -294,7 +309,7 @@ def preview_confirm(bbox, title):
     sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
     margin = 140
     scale = min(1.0, (sw - margin) / w, (sh - margin) / h)
-    disp = img if scale &gt;= 1 else img.resize((int(w * scale), int(h * scale)))
+    disp = img if scale >= 1 else img.resize((int(w * scale), int(h * scale)))
 
     tk_img = ImageTk.PhotoImage(disp)
     tk.Label(root, image=tk_img).pack()
@@ -464,7 +479,7 @@ def run(cfg: Config):
                     continue
 
                 change_streak += 1
-                if change_streak &lt; cfg.min_change_frames:
+                if change_streak < cfg.min_change_frames:
                     print(f"[信息] {now} 检测到短暂变化（{change_streak}/{cfg.min_change_frames}）")
                     time.sleep(cfg.interval_seconds)
                     continue
@@ -548,9 +563,9 @@ def parse_args():
 if __name__ == "__main__":
     cfg = parse_args()
     run(cfg)
-</pre>
 
+```
 
+通过这个脚本可以实现当截图屏幕内容出现变化时会调用win10toast发送通知，间隔5s一直发送直到按下enter键，海明距离设为6保证微小的变化比如鼠标指针出现不会触发警告，整个过程在离线环境下进行，本地截图方式避免了内外网络请求，确保数据的安全性
 
-<p>通过这个脚本可以实现当截图屏幕内容出现变化时会调用win10toast发送通知，间隔5s一直发送直到按下enter键，海明距离设为6保证微小的变化比如鼠标指针出现不会触发警告，整个过程在离线环境下进行，本地截图方式避免了内外网络请求，确保数据的安全性</p>
-<p>1115 更新检测网络是否连通和确认机制，连续三次检测到pHash变化再告警</p>
+1115 更新检测网络是否连通和确认机制，连续三次检测到pHash变化再告警

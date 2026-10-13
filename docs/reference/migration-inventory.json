@@ -4,14 +4,22 @@
   "pages": [
     {
       "path": "/agent-harness/",
-      "title": "自己开发的agent harness",
+      "title": "自己开发的 Agent Harness：Codex Development Workflow",
       "date": "2026-10-12T11:59Z",
       "target": "src/content/posts/agent-harness.md",
       "route": "/posts/agent-harness/",
       "tags": [],
-      "normalizedTextSha256": "672ecc43860d44e50ddc4487571a6ed962b11f10d022d1de8906aafc40d955c7",
-      "codeSha256": [],
-      "sourceHtmlSha256": "3df310847a980e9e89952ba4d734afb479e62a7a5925ee55ddc10d2c69d40e89"
+      "normalizedTextSha256": "757be6bc075f066e4ea673d9554aa33298968aa7fcdd9342c955fc39c7f88961",
+      "codeSha256": [
+        "78503e9eb6b692ef75f982b4077c466cab896ac0c9d8be2f4ff21cb6aefeab7f",
+        "2a946123655fefbc7185047739a37ad94cec8085f15650994b5b0d85fa887405",
+        "e5d1961319ed7c535f31572f4dd019a2034e7cc2a76345dbcbc61025fe964e54"
+      ],
+      "sourceHtmlSha256": "3df310847a980e9e89952ba4d734afb479e62a7a5925ee55ddc10d2c69d40e89",
+      "originalNormalizedTextSha256": "672ecc43860d44e50ddc4487571a6ed962b11f10d022d1de8906aafc40d955c7",
+      "originalCodeSha256": [],
+      "baselineReason": "Prior main changes preserved from a320827; current conversion does not change article prose or About contacts.",
+      "originalTitle": "自己开发的agent harness"
     },
     {
       "path": "/skill-eval/",
@@ -46,7 +54,7 @@
       "target": "src/content/posts/dynamic-cpu-for-build-image.md",
       "route": "/posts/dynamic-cpu-for-build-image/",
       "tags": [],
-      "normalizedTextSha256": "1591b1692b670e3524ea97218915fd613b740387319f53afab66ab11672e2f96",
+      "normalizedTextSha256": "b99add811a08c05830deadc6a1e9a71d8e0540dd0b0161820f0dbb260872b85a",
       "codeSha256": [
         "260b83d21ac2e1788fd2d9ca5a51c1489ae8aea3d44addfb799c4f44c6dded2a",
         "dfd600ac99d1578b60c39bf91be3b5b1ff5b7a2fc490168697197c54f03fe94a",
@@ -57,7 +65,9 @@
         "8cbb42d157b9840ff06b79f4d85864cf2bc6163410ade392ccf9a35faf1d01b8",
         "ec70cb8f1020ff2c10e8d8664c1bd54a48cb31d18d3afd050fcb59a39a28ae8e"
       ],
-      "sourceHtmlSha256": "d8814411e7612c5c7e45513a4bd0f42ddf6d472c09218bfb101a504c054cbedc"
+      "sourceHtmlSha256": "d8814411e7612c5c7e45513a4bd0f42ddf6d472c09218bfb101a504c054cbedc",
+      "originalNormalizedTextSha256": "1591b1692b670e3524ea97218915fd613b740387319f53afab66ab11672e2f96",
+      "baselineReason": "Equivalent source text and exact code checked against 87165bd; normalize code as text without presentation span separators."
     },
     {
       "path": "/new-post/",
@@ -264,7 +274,7 @@
       "target": "src/content/posts/nacos-mysql-8044.md",
       "route": "/posts/nacos-mysql-8044/",
       "tags": [],
-      "normalizedTextSha256": "85cd7687af5f19b16567d94c9093205480c0233a32ea101762e59b93d402e553",
+      "normalizedTextSha256": "d1b8ce6f14b7e7201f022ebd06a3347ab33bc0a21a2164588bcf30ff8941889b",
       "codeSha256": [
         "bcab4d7a3c0a1dbad0e7a3750c7bacfb8988fbb5c2442bab039b03673e73daa5",
         "dfa4259d05d16c819f99b644b317bfd09e72e1893d1271e72fd58f1de3c0459d",
@@ -277,7 +287,9 @@
         "de311b2a9ead34517f8ed042f060af6e2e2cedee48db8bf21df7a4155567f7f8",
         "4b69f311a83a7b44df2316fb99a40b20fbde25dd2cc5a4ec6983d055c566bbeb"
       ],
-      "sourceHtmlSha256": "b1a33157f36a2820c84178126c1473bf5c5ade91e2027f711932e9c7b000a813"
+      "sourceHtmlSha256": "b1a33157f36a2820c84178126c1473bf5c5ade91e2027f711932e9c7b000a813",
+      "originalNormalizedTextSha256": "85cd7687af5f19b16567d94c9093205480c0233a32ea101762e59b93d402e553",
+      "baselineReason": "Equivalent source text and exact code checked against 87165bd; normalize code as text without presentation span separators."
     },
     {
       "path": "/dd/",
@@ -383,7 +395,7 @@
       "target": "src/content/posts/podman.md",
       "route": "/posts/podman/",
       "tags": [],
-      "normalizedTextSha256": "968244b0b245e24cedce8fe29f134153c1e02bd87cd8540ea0fbf5f97cf6b956",
+      "normalizedTextSha256": "6618dcbc84451b1c25a0aad332a42326fccf7208894e4cec93142599e8313e54",
       "codeSha256": [
         "9f2556e614b9072bc62ff4877ce95c90d0e698a4225feaad1cef7de824ac4637",
         "157b319744fd21ae2ebc6073a647e7885fef9f0c2ff2ff6b4b72e1acc75b20e8",
@@ -396,7 +408,9 @@
         "d011c18f0806388ca30cae9f771af7ca7ac63bbe44f8a40d1e2381daffb86dea",
         "43b8b98fca3f50ccee12d9d2503d90daa87715a2d1a0f122cd1ae15684d1da9a"
       ],
-      "sourceHtmlSha256": "204a0f11cf5fa41eab892781f4e2dc8c4fdded33903784a7060012b953317f40"
+      "sourceHtmlSha256": "204a0f11cf5fa41eab892781f4e2dc8c4fdded33903784a7060012b953317f40",
+      "originalNormalizedTextSha256": "968244b0b245e24cedce8fe29f134153c1e02bd87cd8540ea0fbf5f97cf6b956",
+      "baselineReason": "Equivalent source text and exact code checked against 87165bd; normalize code as text without presentation span separators."
     },
     {
       "path": "/screen/",
@@ -463,7 +477,7 @@
       "target": "src/content/posts/mydumper.md",
       "route": "/posts/mydumper/",
       "tags": [],
-      "normalizedTextSha256": "128edce034b4f193e8a7cc96c0d8915e69f318d9f77b7f154786970178ccc4ac",
+      "normalizedTextSha256": "2642ef0620c6bba400eabee75bc302e94921a6b5e576b49350a16ac694319145",
       "codeSha256": [
         "7c8a0a663bf57ffc0214496fbe65b455fcef397ca3d31148e1538f9af85e496e",
         "1516a15c2c8417280a66e3b8fbd54b7ae82e94010b3e3f440eeed57efa87f2d0",
@@ -477,7 +491,9 @@
         "9799a04986921c56037762089fca748030a16ba09fe8834d7e6de8ae1a585077",
         "4a8fe583a29dbc7acce738a3d524efab22d0cadcf5092bf0f7008e44400c030a"
       ],
-      "sourceHtmlSha256": "773226408eb760a4d55f5d072406b25c95fc9f1e5b20e0d8b8c2e44c96be11cf"
+      "sourceHtmlSha256": "773226408eb760a4d55f5d072406b25c95fc9f1e5b20e0d8b8c2e44c96be11cf",
+      "originalNormalizedTextSha256": "128edce034b4f193e8a7cc96c0d8915e69f318d9f77b7f154786970178ccc4ac",
+      "baselineReason": "Equivalent source text and exact code checked against 87165bd; normalize code as text without presentation span separators."
     },
     {
       "path": "/prompt/",
@@ -497,11 +513,13 @@
       "target": "src/content/posts/hello.md",
       "route": "/posts/hello/",
       "tags": [],
-      "normalizedTextSha256": "f79c7be4b37b18cb62ffef5b09b6e58473e7417ff18ec8e8a3db801e3d7d6438",
+      "normalizedTextSha256": "1aa7eb823b73ab78c97bad5db51343f4ab46934966672708a1e487bdd088caa1",
       "codeSha256": [
         "86415454e4bde24d39efad77bc69764aa887f19c445ddfa41ccbb770e8fc8fb6"
       ],
-      "sourceHtmlSha256": "b61c602b754516c7963b3a03da4900f3817fce676b5d12dcc133775caf3c443a"
+      "sourceHtmlSha256": "b61c602b754516c7963b3a03da4900f3817fce676b5d12dcc133775caf3c443a",
+      "originalNormalizedTextSha256": "f79c7be4b37b18cb62ffef5b09b6e58473e7417ff18ec8e8a3db801e3d7d6438",
+      "baselineReason": "Equivalent source text and exact code checked against 87165bd; normalize code as text without presentation span separators."
     },
     {
       "path": "/about-me/",
@@ -509,9 +527,11 @@
       "target": "src/content/pages/about.md",
       "route": "/about/",
       "tags": [],
-      "normalizedTextSha256": "d910f8ba3e1a4d0d658e29cc08d4eefbcadaee1e2525f5ebc95bf1a2e4731fa7",
+      "normalizedTextSha256": "d99593ee1a3823f2900a35f084aece7ecb2441458f832fe473a9c016cdf22cc8",
       "codeSha256": [],
-      "sourceHtmlSha256": "0da62d0d2f852d2720cc8065d1406abf681be2593870b1e0c75cce275dbb9bd1"
+      "sourceHtmlSha256": "0da62d0d2f852d2720cc8065d1406abf681be2593870b1e0c75cce275dbb9bd1",
+      "originalNormalizedTextSha256": "d910f8ba3e1a4d0d658e29cc08d4eefbcadaee1e2525f5ebc95bf1a2e4731fa7",
+      "baselineReason": "Prior main changes preserved from a320827; current conversion does not change article prose or About contacts."
     }
   ],
   "images": {
