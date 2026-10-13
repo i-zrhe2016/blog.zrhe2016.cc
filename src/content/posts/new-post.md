@@ -6,10 +6,12 @@ tags: []
 draft: false
 ---
 
-<p>Yes. Your understanding is correct.</p>
-<p>A slightly more complete mental model is:</p>
+Yes. Your understanding is correct.
 
-<pre><span></span>Traditional public service
+A slightly more complete mental model is:
+
+```text
+Traditional public service
 
 Internet User
      │
@@ -21,13 +23,13 @@ Internet User
      │ Port Forward
      ▼
    Server
-</pre>
 
+```
 
+Cloudflare Tunnel changes the direction of the connection:
 
-<p>Cloudflare Tunnel changes the direction of the connection:</p>
-
-<pre><span></span>                 ┌───────────────┐
+```text
+                 ┌───────────────┐
 Internet User ──►│  Cloudflare   │
                  │  Edge Network │
                  └───────┬───────┘
@@ -38,32 +40,33 @@ Internet User ──►│  Cloudflare   │
                          │
                          ▼
                   localhost:8080
-</pre>
 
+```
 
+The important point is that **your server initiates an outbound connection to Cloudflare**:
 
-<p>The important point is that <strong>your server initiates an outbound connection to Cloudflare</strong>:</p>
+```text
+Server ───── outbound HTTPS/QUIC ─────► Cloudflare
 
-<pre><span></span>Server ───── outbound HTTPS/QUIC ─────► Cloudflare
-</pre>
+```
 
+So Cloudflare does not need to initiate a connection to your home/server network.
 
+This means you generally do **not** need:
 
-<p>So Cloudflare does not need to initiate a connection to your home/server network.</p>
-<p>This means you generally do <strong>not</strong> need:</p>
-
-<pre><span></span>Public IPv4
+```text
+Public IPv4
 Port forwarding
 UPnP
 NAT configuration
 Opening 80/443 on the router
-</pre>
 
+```
 
+It also works well in situations like:
 
-<p>It also works well in situations like:</p>
-
-<pre><span></span>Home broadband behind CGNAT
+```text
+Home broadband behind CGNAT
       │
       ├── No public IPv4
       │
@@ -75,84 +78,63 @@ Cloudflare Tunnel
       │
       ▼
 https://app.example.com
-</pre>
 
+```
 
+For example, suppose your application listens only on:
 
-<p>For example, suppose your application listens only on:</p>
+```text
+127.0.0.1:3000
 
-<pre><span></span>127.0.0.1:3000
-</pre>
+```
 
+You can map:
 
-
-<p>You can map:</p>
-
-<pre><span></span>app.example.com
+```text
+app.example.com
       ↓
 Cloudflare
       ↓
 Tunnel
       ↓
 127.0.0.1:3000
-</pre>
 
+```
 
+So from the user&#39;s perspective:
 
-<p>So from the user's perspective:</p>
+```text
+https://app.example.com
 
-<pre><span></span>https://app.example.com
-</pre>
+```
 
+But the real server remains inaccessible directly from the Internet.
 
+One distinction worth remembering:
 
-<p>But the real server remains inaccessible directly from the Internet.</p>
-<p>One distinction worth remembering:</p>
-<table>
-<thead>
-<tr>
-<th>Technology</th>
-<th>Main idea</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Port forwarding</td>
-<td>Internet → your server</td>
-</tr>
-<tr>
-<td>VPN</td>
-<td>Devices join the same private network</td>
-</tr>
-<tr>
-<td>Cloudflare Tunnel</td>
-<td>Your server → Cloudflare ← users</td>
-</tr>
-<tr>
-<td>Reverse proxy</td>
-<td>Proxy receives requests then forwards them</td>
-</tr>
-<tr>
-<td>Reverse tunnel</td>
-<td>Backend actively establishes the tunnel outward</td>
-</tr>
-</tbody>
-</table>
-<p>So Cloudflare Tunnel can be understood as roughly:</p>
+| Technology | Main idea |
+| --- | --- |
+| Port forwarding | Internet → your server |
+| VPN | Devices join the same private network |
+| Cloudflare Tunnel | Your server → Cloudflare ← users |
+| Reverse proxy | Proxy receives requests then forwards them |
+| Reverse tunnel | Backend actively establishes the tunnel outward |
 
-<pre><span></span>Reverse Tunnel
+So Cloudflare Tunnel can be understood as roughly:
+
+```text
+Reverse Tunnel
       +
 Reverse Proxy
       +
 Cloudflare Edge
       +
 DNS / TLS / Access controls
-</pre>
 
+```
 
+The shortest summary is:
 
-<p>The shortest summary is:</p>
-<blockquote>
-<p><strong>Cloudflare Tunnel turns “Internet needs to find my server” into “my server goes out and connects to Cloudflare first.”</strong></p>
-</blockquote>
-<p>This is why it is especially useful for <strong>no-public-IP / CGNAT / home server / internal web service</strong> scenarios.</p>
+> **Cloudflare Tunnel turns “Internet needs to find my server” into “my server goes out and connects to Cloudflare first.”**
+
+This is why it is especially useful for **no-public-IP / CGNAT / home server / internal web service** scenarios.

@@ -6,44 +6,47 @@ tags: []
 draft: false
 ---
 
-<h2 id="">快速重装</h2><h3 id="ddubuntu2204">dd重装为ubuntu22.04</h3>
+## 快速重装
 
-<pre><span></span>curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh &amp;&amp; chmod +x reinstall.sh &amp;&amp; ./reinstall.sh ubuntu22.04 --password 'FncPBRa9uu*LhA'
-</pre>
+### dd重装为ubuntu22.04
 
+```text
+curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh && chmod +x reinstall.sh && ./reinstall.sh ubuntu22.04 --password 'FncPBRa9uu*LhA'
 
+```
 
-<h3 id="ddrocky-8">dd重装为rocky 8</h3>
+### dd重装为rocky 8
 
-<pre><span></span>curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh &amp;&amp; chmod +x reinstall.sh &amp;&amp; ./reinstall.sh rocky 8 --password 'FncPBRa9uu*LhA'
-</pre>
+```text
+curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh && chmod +x reinstall.sh && ./reinstall.sh rocky 8 --password 'FncPBRa9uu*LhA'
 
+```
 
+### dd重装为centos 8
 
-<h3 id="ddcentos-8">dd重装为centos 8</h3>
+```text
+curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh && chmod +x reinstall.sh && ./reinstall.sh centos 8 --password 'FncPBRa9uu*LhA'
 
-<pre><span></span>curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh &amp;&amp; chmod +x reinstall.sh &amp;&amp; ./reinstall.sh centos 8 --password 'FncPBRa9uu*LhA'
-</pre>
+```
 
+### dd重装为almalinux 8
 
+```text
+curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh && chmod +x reinstall.sh && ./reinstall.sh almalinux 8 --password 'FncPBRa9uu*LhA'
 
-<h3 id="ddalmalinux-8">dd重装为almalinux 8</h3>
+```
 
-<pre><span></span>curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh &amp;&amp; chmod +x reinstall.sh &amp;&amp; ./reinstall.sh almalinux 8 --password 'FncPBRa9uu*LhA'
-</pre>
+### dd重装为anolis 8
 
+```text
+curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh && chmod +x reinstall.sh && ./reinstall.sh anolis 8 --password 'FncPBRa9uu*LhA'
 
+```
 
-<h3 id="ddanolis-8">dd重装为anolis 8</h3>
+### usage
 
-<pre><span></span>curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh &amp;&amp; chmod +x reinstall.sh &amp;&amp; ./reinstall.sh anolis 8 --password 'FncPBRa9uu*LhA'
-</pre>
-
-
-
-<h3 id="usage">usage</h3>
-
-<pre><span></span>Usage:  ./reinstall.sh anolis      7|8|23
+```text
+Usage:  ./reinstall.sh anolis      7|8|23
                        opencloudos 8|9|23
                        rocky       8|9|10
                        oracle      8|9|10
@@ -80,7 +83,5 @@ draft: false
                        [--add-driver INF_OR_DIR]
 
 Manual: https://github.com/bin456789/reinstall
-</pre>
 
-
-
+```

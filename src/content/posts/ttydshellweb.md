@@ -6,25 +6,25 @@ tags: []
 draft: false
 ---
 
-<p>安装</p>
+安装
 
-<pre><span></span>snap<span class="w"> </span>install<span class="w"> </span>ttyd<span class="w"> </span>--classic
-</pre>
+```text
+snap install ttyd --classic
 
+```
 
+启动
 
-<p>启动</p>
+```text
+ttyd -W -p 8889 bash
 
-<pre><span></span>ttyd<span class="w"> </span>-W<span class="w"> </span>-p<span class="w"> </span><span class="m">8889</span><span class="w"> </span>bash
-</pre>
+```
 
+在浏览器中访问：
 
+```text
+http://IP:8889
 
-<p>在浏览器中访问：</p>
+```
 
-<pre><span></span>http://IP:8889
-</pre>
-
-
-
-<p>好处就是shell可以直接在浏览器中访问，国外节点无需配置代理即可加速</p>
+好处就是shell可以直接在浏览器中访问，国外节点无需配置代理即可加速

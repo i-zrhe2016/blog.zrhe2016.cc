@@ -6,16 +6,17 @@ tags: []
 draft: false
 ---
 
-<h2 id="install">install</h2>
+## install
 
-<pre><span></span>curl https://raw.githubusercontent.com/i-zrhe2016/lp/refs/heads/main/lp.sh | sh
-</pre>
+```text
+curl https://raw.githubusercontent.com/i-zrhe2016/lp/refs/heads/main/lp.sh | sh
 
+```
 
+## usage
 
-<h2 id="usage">usage</h2>
-
-<pre><span></span>usage: asciinema [-h] [--version] {rec,play,cat,upload,auth} ...
+```text
+usage: asciinema [-h] [--version] {rec,play,cat,upload,auth} ...
 
 Record and share your terminal sessions, the right way.
 
@@ -48,8 +49,6 @@ example usage:
     asciinema cat demo.cast
 
 For help on a specific command run:
-  asciinema &lt;command&gt; -h
-</pre>
+  asciinema <command> -h
 
-
-
+```

@@ -6,9 +6,10 @@ tags: []
 draft: false
 ---
 
-<h3 id="install-terraform">Install terraform</h3>
+### Install terraform
 
-<pre><span></span>apt-get update
+```text
+apt-get update
 apt-get install -y gnupg software-properties-common curl
 
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -17,22 +18,22 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 
 apt-get update
 apt-get install terraform
-</pre>
 
+```
 
+创建和销毁实例
 
-<p>创建和销毁实例</p>
-
-<pre><span></span>terraform init
+```text
+terraform init
 terraform apply
 terraform destroy
-</pre>
 
+```
 
+### Usage
 
-<h3 id="usage">Usage</h3>
-
-<pre><span></span>Usage: terraform [global options] &lt;subcommand&gt; [args]
+```text
+Usage: terraform [global options] <subcommand> [args]
 
 The available commands for execution are listed below.
 The primary workflow commands are given first, followed by
@@ -74,18 +75,19 @@ Global options (use these before the subcommand, if any):
                 given subcommand.
   -help         Show this help output or the help for a specified subcommand.
   -version      An alias for the "version" subcommand.
-</pre>
 
+```
 
+创建三台 vps，指定密钥登陆，添加一个vpc
 
-<p>创建三台 vps，指定密钥登陆，添加一个vpc<br/>
-main.ts</p>
+main.ts
 
-<pre><span></span>terraform {
+```text
+terraform {
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
-      version = "~&gt; 2.0"
+      version = "~> 2.0"
     }
   }
 }
@@ -135,7 +137,7 @@ resource "digitalocean_droplet" "vm" {
 }
 
 output "ips" {
-  value = { for k, d in digitalocean_droplet.vm : k =&gt; d.ipv4_address }
+  value = { for k, d in digitalocean_droplet.vm : k => d.ipv4_address }
 }
 
 output "vpc_id" {
@@ -143,9 +145,7 @@ output "vpc_id" {
 }
 
 output "private_ips" {
-  value = { for k, d in digitalocean_droplet.vm : k =&gt; d.ipv4_address_private }
+  value = { for k, d in digitalocean_droplet.vm : k => d.ipv4_address_private }
 }
-</pre>
 
-
-
+```

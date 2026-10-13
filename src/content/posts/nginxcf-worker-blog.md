@@ -6,9 +6,10 @@ tags: []
 draft: false
 ---
 
-<p>配置文件</p>
+配置文件
 
-<pre><span></span>resolver 8.8.8.8 ipv6=off;
+```text
+resolver 8.8.8.8 ipv6=off;
 
 server {
     listen 80;
@@ -23,8 +24,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 }
-</pre>
 
+```
 
-
-<p>proxy_ssl_server_name 需要开启，否则https握手时sni只会携带被代理域名的ip地址，与证书域名不匹配</p>
+proxy_ssl_server_name 需要开启，否则https握手时sni只会携带被代理域名的ip地址，与证书域名不匹配

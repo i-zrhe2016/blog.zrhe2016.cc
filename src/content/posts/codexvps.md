@@ -6,18 +6,18 @@ tags: []
 draft: false
 ---
 
-<p>在本地登陆codex</p>
-<p>进入目录</p>
+在本地登陆codex
 
-<pre><span></span>/System/Volumes/Data/Users/zrh/.codex  
-</pre>
+进入目录
 
+```text
+/System/Volumes/Data/Users/zrh/.codex  
 
+```
 
-<p>scp拷贝auth.json到远程vps即可</p>
+scp拷贝auth.json到远程vps即可
 
-<pre><span></span>scp ./auth.json root@147.182.202.123:~/.codex
-</pre>
+```text
+scp ./auth.json root@147.182.202.123:~/.codex
 
-
-
+```

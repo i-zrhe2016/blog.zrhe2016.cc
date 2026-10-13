@@ -6,36 +6,40 @@ tags: []
 draft: false
 ---
 
-<p>install node.js</p>
+install node.js
 
-<pre><span></span>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+```text
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.bashrc
 nvm install --lts
 node -v
 npm -v
-</pre>
 
+```
 
+### install codex
 
-<h3 id="install-codex">install codex</h3>
+```text
+npm i -g @openai/codex
 
-<pre><span></span>npm i -g @openai/codex
-</pre>
+```
 
+### login codex
 
+enable device code login on chatgpt account
 
-<h3 id="login-codex">login codex</h3><p>enable device code login on chatgpt account<br/>
-open link and use code to login</p>
+open link and use code to login
 
-<pre><span></span>codex login --device-auth
-</pre>
+```text
+codex login --device-auth
 
+```
 
+### 方式2 配置端口转发
 
-<h3 id="2">方式2 配置端口转发</h3><p>本地请求将回调地址转发到虚拟机或者vps</p>
+本地请求将回调地址转发到虚拟机或者vps
 
-<pre><span></span>ssh -i "/path/to/private_key" -L 1455:127.0.0.1:1455 root@192.168.147.130
-</pre>
+```text
+ssh -i "/path/to/private_key" -L 1455:127.0.0.1:1455 root@192.168.147.130
 
-
-
+```
