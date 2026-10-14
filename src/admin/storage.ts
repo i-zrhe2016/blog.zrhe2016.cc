@@ -46,5 +46,3 @@ function mutate<T>(action: (store: IDBObjectStore) => IDBRequest<T>) {
   return operation;
 }
 export const writeDraft = (draft: Draft) => mutate(store => store.put(draft));
-export const deleteDraft = (path: string) =>
-  mutate(store => store.delete(path));
