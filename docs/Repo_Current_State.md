@@ -16,7 +16,7 @@ Last verified: 2026-10-14 @ working tree
 - The site title is `zrhe2016`; post list cards display titles and dates without excerpts.
 - The homepage omits the Recent Posts heading and uses compact spacing and `YYYY-MM-DD` dates without calendar icons; other date displays keep their existing format.
 - Page navigation disables view-transition animations and named post-title/tag transitions.
-- Article pages omit the back-to-top button and scroll progress indicators.
+- Article pages omit Go back, previous/next post navigation, the back-to-top button and scroll progress indicators.
 - Page text uses proportional system sans fonts with Chinese fallbacks; code and preformatted text retain bundled Google Sans Code.
 - `wrangler.jsonc` declares the Worker entrypoint with static assets and protected admin routes and branch preview configuration; deployment details are in the [migration reference](reference/bearblog-migration.md).
 

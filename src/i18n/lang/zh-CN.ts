@@ -18,8 +18,6 @@ export default {
     tagLabel: "标签",
     goBack: "返回",
     editPage: "编辑页面",
-    previousPost: "上一篇",
-    nextPost: "下一篇",
   },
   pagination: { prev: "上一页", next: "下一页", page: "页" },
   home: {
