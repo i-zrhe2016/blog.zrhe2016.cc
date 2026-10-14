@@ -38,5 +38,13 @@ async function transact<T>(
 }
 export const readDrafts = () =>
   transact<Draft[]>("readonly", store => store.getAll());
-export const writeDraft = (draft: Draft) =>
-  transact("readwrite", store => store.put(draft));
+// Serialize mutations even while the database is still opening.
+let mutations: Promise<unknown> = Promise.resolve();
+function mutate<T>(action: (store: IDBObjectStore) => IDBRequest<T>) {
+  const operation = mutations.then(() => transact("readwrite", action));
+  mutations = operation.catch(() => undefined);
+  return operation;
+}
+export const writeDraft = (draft: Draft) => mutate(store => store.put(draft));
+export const deleteDraft = (path: string) =>
+  mutate(store => store.delete(path));
