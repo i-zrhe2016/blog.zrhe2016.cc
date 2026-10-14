@@ -16,7 +16,6 @@ export default {
     sharePostOn: "Share this post on {{platform}}",
     sharePostViaEmail: "Share this post via email",
     tagLabel: "Tags",
-    backToTop: "Back to top",
     goBack: "Go back",
     editPage: "Edit page",
     previousPost: "Previous Post",

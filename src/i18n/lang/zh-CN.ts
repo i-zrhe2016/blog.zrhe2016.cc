@@ -16,7 +16,6 @@ export default {
     sharePostOn: "分享到 {{platform}}",
     sharePostViaEmail: "通过邮件分享",
     tagLabel: "标签",
-    backToTop: "回到顶部",
     goBack: "返回",
     editPage: "编辑页面",
     previousPost: "上一篇",
