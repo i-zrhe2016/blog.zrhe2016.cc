@@ -11,7 +11,7 @@ import {
   imageTypes,
   type Metadata,
 } from "./content";
-import { readDrafts, writeDraft, type Draft } from "./storage";
+import { readDrafts, writeDraft, deleteDraft, type Draft } from "./storage";
 import { renderPreview } from "./preview";
 import { previewSource } from "./preview-source";
 import { articleRoute } from "./article-url";
@@ -32,6 +32,8 @@ let editorExtensions: Extension[] = [];
 const editability = new Compartment();
 let switching = false;
 let publishing = false;
+let deleting = false;
+let draftEpoch = 0;
 let persistedRaw = "";
 let timer: ReturnType<typeof setTimeout>;
 let pollTimer: ReturnType<typeof setTimeout>;
@@ -112,7 +114,7 @@ async function openLink() {
       throw error;
     });
   const path = (await postPaths)[route];
-  if (revision !== openRevision || publishing) return;
+  if (revision !== openRevision || publishing || deleting) return;
   if (!path)
     throw new Error(
       "该链接不是当前博客已构建的 Markdown 文章，请检查网址或等待部署完成。"
@@ -153,6 +155,7 @@ function resetObjectUrls() {
     );
 }
 async function preview() {
+  if (deleting) return;
   const revision = ++previewRevision;
   if (!current) return;
   try {
@@ -174,6 +177,7 @@ async function preview() {
   }
 }
 function queueSave() {
+  if (deleting) return;
   clearTimeout(timer);
   $("save-status").textContent = "正在编辑…";
   timer = setTimeout(() => {
@@ -182,11 +186,13 @@ function queueSave() {
 }
 async function save() {
   clearTimeout(timer);
-  if (!current) return;
+  if (!current || deleting) return;
+  const epoch = draftEpoch;
   const snapshot = structuredClone(current);
   snapshot.updatedAt = Date.now();
   try {
     await writeDraft(snapshot);
+    if (epoch !== draftEpoch || deleting) return;
     drafts.set(snapshot.path, snapshot);
     if (current?.path === snapshot.path && current.raw === snapshot.raw) {
       persistedRaw = snapshot.raw;
@@ -195,6 +201,7 @@ async function save() {
     }
     renderRecovery();
   } catch {
+    if (epoch !== draftEpoch || deleting) return;
     $("save-status").textContent = "草稿保存失败，请立即导出备份";
     throw new Error(
       "浏览器无法保存草稿（可能空间不足或存储被禁用）。请导出 Markdown；待发布图片也请保留原文件。"
@@ -228,9 +235,9 @@ function loadDraft(draft: Draft) {
   if (draft.lastCommit) void poll(draft.lastCommit);
 }
 async function openPost(path: string, revision = ++openRevision) {
-  if (publishing) return;
+  if (publishing || deleting) return;
   await save();
-  if (revision !== openRevision || publishing) return;
+  if (revision !== openRevision || publishing || deleting) return;
   const draft = drafts.get(path);
   if (draft) {
     loadDraft(draft);
@@ -240,7 +247,7 @@ async function openPost(path: string, revision = ++openRevision) {
   const data = await api<{ path: string; sha: string; markdown: string }>(
     `post?path=${encodeURIComponent(path)}`
   );
-  if (revision !== openRevision || publishing) return;
+  if (revision !== openRevision || publishing || deleting) return;
   loadDraft({
     path,
     raw: data.markdown,
@@ -267,8 +274,9 @@ function exportMarkdown() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 async function insertImages(files: File[]) {
-  if (!current || publishing) return;
+  if (!current || publishing || deleting) return;
   const draft = current;
+  const epoch = draftEpoch;
   const additions: Draft["images"] = [];
   let total = draft.images.reduce((sum, image) => sum + image.file.size, 0);
   for (const file of files) {
@@ -285,6 +293,7 @@ async function insertImages(files: File[]) {
       file,
     });
   }
+  if (epoch !== draftEpoch || deleting) return;
   if (current !== draft || publishing)
     throw new Error("文章已切换或正在发布，请稍后重新插入图片");
   current.images.push(...additions);
@@ -293,7 +302,7 @@ async function insertImages(files: File[]) {
   await save();
 }
 function insert(text: string, suffix = "") {
-  if (!current || publishing) return;
+  if (!current || publishing || deleting) return;
   let range = {
     from: view.state.selection.main.from,
     to: view.state.selection.main.to,
@@ -324,6 +333,7 @@ function setBusy(value: boolean) {
   for (const id of [
     "publish",
     "unpublish",
+    "remove-draft",
     "new",
     "remote",
     "image",
@@ -344,7 +354,7 @@ function setBusy(value: boolean) {
   renderRecovery();
 }
 async function publish(unpublish = false) {
-  if (!current || publishing) return;
+  if (!current || publishing || deleting) return;
   if (
     unpublish &&
     !confirm("下架会将文章标记为草稿，重新部署后从公开博客移除。确认下架？")
@@ -414,11 +424,18 @@ async function publish(unpublish = false) {
 async function poll(sha: string, attempt = 0) {
   clearTimeout(pollTimer);
   const path = current?.path;
+  const epoch = draftEpoch;
   try {
     const data = await api<{ state: string; message: string; url?: string }>(
       `deployments/${sha}`
     );
-    if (current?.path !== path || current?.lastCommit !== sha) return;
+    if (
+      epoch !== draftEpoch ||
+      deleting ||
+      current?.path !== path ||
+      current?.lastCommit !== sha
+    )
+      return;
     $("deploy-status").textContent = `${data.message} · ${sha.slice(0, 7)}`;
     if (data.url) {
       const url = new URL(data.url);
@@ -445,7 +462,13 @@ async function poll(sha: string, attempt = 0) {
     }
     if (["success", "failed", "superseded"].includes(data.state)) return;
   } catch (e) {
-    if (current?.path !== path || current?.lastCommit !== sha) return;
+    if (
+      epoch !== draftEpoch ||
+      deleting ||
+      current?.path !== path ||
+      current?.lastCommit !== sha
+    )
+      return;
     $("deploy-status").textContent =
       `状态查询暂不可用：${e instanceof Error ? e.message : e}`;
   }
@@ -456,9 +479,16 @@ async function poll(sha: string, attempt = 0) {
   else $("deploy-status").append(" · 自动查询已结束，可重新打开文章查询。");
 }
 async function compareRemote() {
-  if (!current || publishing) return;
+  if (!current || publishing || deleting) return;
+  const draft = current;
+  const epoch = draftEpoch;
   await save();
-  remote = await api(`post?path=${encodeURIComponent(current.path)}`);
+  if (epoch !== draftEpoch || current !== draft || deleting) return;
+  const result = await api<{ path: string; sha: string; markdown: string }>(
+    `post?path=${encodeURIComponent(draft.path)}`
+  );
+  if (epoch !== draftEpoch || current !== draft || deleting) return;
+  remote = result;
   $<HTMLTextAreaElement>("compare-local").value = current.raw;
   $<HTMLTextAreaElement>("compare-remote").value = remote!.markdown;
   $<HTMLDialogElement>("compare-dialog").showModal();
@@ -537,6 +567,56 @@ async function init() {
   $("save").onclick = () => {
     void save().catch(failure);
   };
+  $("remove-draft").onclick = async () => {
+    if (
+      !current ||
+      publishing ||
+      deleting ||
+      !confirm(
+        "移除当前本地草稿会丢失本地修改和待发布图片；未发布的新文章无法恢复。GitHub 文章不会改变。确认移除？"
+      )
+    )
+      return;
+    const path = current.path;
+    deleting = true;
+    ++draftEpoch;
+    ++openRevision;
+    ++previewRevision;
+    clearTimeout(timer);
+    clearTimeout(pollTimer);
+    setBusy(true);
+    try {
+      await deleteDraft(path);
+      drafts.delete(path);
+      current = undefined;
+      persistedRaw = "";
+      remote = undefined;
+      switching = true;
+      replaceSource("");
+      switching = false;
+      resetObjectUrls();
+      for (const id of [
+        "title",
+        "description",
+        "pubDatetime",
+        "tags",
+        "image-input",
+      ])
+        input(id).value = "";
+      input("featured").checked = false;
+      for (const id of ["document-path", "save-status", "deploy-status"])
+        $(id).textContent = "";
+      $("editing").hidden = true;
+      $("empty").hidden = false;
+      renderRecovery();
+      message("当前本地草稿已移除，GitHub 文章未改变。");
+    } catch {
+      message("移除失败，内容和待发布图片已保留，请重试。", true);
+    } finally {
+      deleting = false;
+      setBusy(false);
+    }
+  };
   $("export").onclick = exportMarkdown;
   $("publish").onclick = () => {
     void publish();
@@ -551,7 +631,14 @@ async function init() {
     $<HTMLDialogElement>("compare-dialog").close();
   $("compare-export").onclick = exportMarkdown;
   $("compare-accept").onclick = () => {
-    if (!remote || !current || remote.path !== current.path) return;
+    if (
+      publishing ||
+      deleting ||
+      !remote ||
+      !current ||
+      remote.path !== current.path
+    )
+      return;
     if (
       !confirm(
         "将以远端内容替换当前本地草稿和待发布图片。请先导出需要保留的内容。"
@@ -581,7 +668,7 @@ async function init() {
   };
   $("metadata").onsubmit = e => e.preventDefault();
   $("metadata").oninput = event => {
-    if (!current || publishing) return;
+    if (!current || publishing || deleting) return;
     try {
       const { metadata, body } = splitMarkdown(current.raw);
       const id = (event.target as HTMLElement).id;
@@ -632,6 +719,8 @@ async function init() {
   $("cancel-new").onclick = () => $<HTMLDialogElement>("new-dialog").close();
   $("new-form").onsubmit = event => {
     event.preventDefault();
+    if (publishing || deleting) return;
+    const revision = ++openRevision;
     void (async () => {
       const path = validatePostPath(
         `src/content/posts/${input("new-slug").value.trim()}.md`
@@ -644,6 +733,7 @@ async function init() {
         if (!(error instanceof ApiError && error.status === 404)) throw error;
       }
       await save();
+      if (revision !== openRevision || publishing || deleting) return;
       const raw = joinMarkdown(
         {
           title: "未命名文章",
