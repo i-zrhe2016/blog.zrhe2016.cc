@@ -18,8 +18,6 @@ export default {
     tagLabel: "Tags",
     goBack: "Go back",
     editPage: "Edit page",
-    previousPost: "Previous Post",
-    nextPost: "Next Post",
   },
   pagination: {
     prev: "Prev",

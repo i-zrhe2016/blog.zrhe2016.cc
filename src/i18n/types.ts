@@ -16,8 +16,6 @@ export interface UIStrings {
     tagLabel: string;
     goBack: string;
     editPage: string;
-    previousPost: string;
-    nextPost: string;
   };
   pagination: {
     prev: string;
