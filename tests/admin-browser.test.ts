@@ -109,6 +109,7 @@ test(
         if (request.url().endsWith("/api/admin/publish")) publishRequests++;
       });
       await openFirst(page);
+      assert.equal(await page.locator("#remove-draft").count(), 0);
       const source =
         '# 纯正文\n\n**加粗**\n<script>window.__plainAttack=true</script>\n<img src="x" onerror="window.__plainAttack=true">\n[危险](javascript:alert(1))';
       await page.locator(".cm-content").fill(source);
@@ -376,7 +377,6 @@ test(
       await page.locator("#open-link").isDisabled(),
       "publishing locks article switching before asynchronous saves"
     );
-    assert.equal(await page.locator("#remove-draft").isDisabled(), true);
     assert.equal(
       await page.locator(".cm-content").getAttribute("contenteditable"),
       "false"
@@ -472,144 +472,5 @@ test(
     assert.equal(await page.locator("#title").inputValue(), "第一篇");
     assert.deepEqual(errors, []);
     await context.close();
-  }
-);
-
-test(
-  "browser: local removal cancels, serializes saves, retains other drafts and never writes remotely",
-  { timeout: 30_000 },
-  async () => {
-    const context = await browser.newContext();
-    try {
-      const page = await context.newPage();
-      await page.addInitScript(() => {
-        const transaction = IDBDatabase.prototype.transaction;
-        IDBDatabase.prototype.transaction = function (
-          ...args: Parameters<typeof transaction>
-        ) {
-          const tx = transaction.apply(this, args);
-          if (args[1] === "readwrite") {
-            Object.defineProperty(tx, "oncomplete", {
-              set(callback) {
-                tx.addEventListener("complete", event =>
-                  setTimeout(() => callback(event), 250)
-                );
-              },
-            });
-          }
-          return tx;
-        };
-      });
-      const errors = await fixture(page);
-      let writes = 0;
-      page.on("request", request => {
-        if (request.url().includes("/api/admin/") && request.method() !== "GET")
-          writes++;
-      });
-      await openFirst(page);
-      await page.locator("#save").click();
-      await openLink(page, "two");
-      await page.waitForFunction(
-        () =>
-          document.querySelector<HTMLInputElement>("#title")?.value === "第二篇"
-      );
-      await page.locator("#save").click();
-      await page.locator("#title").fill("discard-me");
-      page.once("dialog", async dialog => {
-        assert.match(dialog.message(), /待发布图片/);
-        assert.match(dialog.message(), /无法恢复/);
-        await dialog.dismiss();
-      });
-      await page.locator("#remove-draft").click();
-      assert.equal(await page.locator("#title").inputValue(), "discard-me");
-      // Request a save immediately before removal; its delayed completion must not resurrect the draft.
-      await page.locator("#save").click();
-      page.once("dialog", dialog => dialog.accept());
-      await page.locator("#remove-draft").click();
-      assert.equal(await page.locator("#remove-draft").isDisabled(), true);
-      await page.locator("#empty").waitFor({ state: "visible" });
-      await page.waitForTimeout(900);
-      assert.equal(
-        await page.locator(`#local-draft option[value="${second}"]`).count(),
-        0
-      );
-      assert.equal(
-        await page.locator(`#local-draft option[value="${first}"]`).count(),
-        1
-      );
-      assert.equal(await page.locator("#preview").textContent(), "");
-      await page.reload();
-      await page.waitForFunction(
-        () =>
-          document.querySelector<HTMLInputElement>("#title")?.value === "第一篇"
-      );
-      assert.equal(
-        await page.locator(`#local-draft option[value="${second}"]`).count(),
-        0
-      );
-      assert.equal(writes, 0);
-      assert.deepEqual(errors, []);
-    } finally {
-      await context.close();
-    }
-  }
-);
-
-test(
-  "browser: failed local removal preserves source and pending images and unlocks editing",
-  { timeout: 30_000 },
-  async () => {
-    const context = await browser.newContext();
-    try {
-      const page = await context.newPage();
-      await page.addInitScript(() => {
-        IDBObjectStore.prototype.delete = function () {
-          throw new Error("storage unavailable");
-        };
-      });
-      const errors = await fixture(page);
-      await openFirst(page);
-      await page.locator("#title").fill("keep-me");
-      const png = Buffer.from(
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==",
-        "base64"
-      );
-      await page
-        .locator("#image-input")
-        .setInputFiles({
-          name: "keep.png",
-          mimeType: "image/png",
-          buffer: png,
-        });
-      await page.waitForFunction(() =>
-        document
-          .querySelector(".cm-content")
-          ?.textContent?.includes("/images/uploads/")
-      );
-      const source = await page.locator(".cm-content").innerText();
-      page.once("dialog", dialog => dialog.accept());
-      await page.locator("#remove-draft").click();
-      await page.waitForFunction(() =>
-        document.querySelector("#notice")?.textContent?.includes("移除失败")
-      );
-      assert.equal(await page.locator("#title").inputValue(), "keep-me");
-      assert.equal(await page.locator(".cm-content").innerText(), source);
-      assert.equal(await page.locator("#remove-draft").isEnabled(), true);
-      await page.locator("#view-preview").click();
-      await page.locator('#preview img[src^="blob:"]').waitFor();
-      await page.locator("#view-edit").click();
-      await page.locator("#save").click();
-      await page.reload();
-      await page.waitForFunction(
-        () =>
-          document.querySelector<HTMLInputElement>("#title")?.value ===
-          "keep-me"
-      );
-      await page.locator("#view-preview").click();
-      await page.locator('#preview img[src^="blob:"]').waitFor();
-      assert.deepEqual(errors, []);
-    } finally {
-      await context.close();
-    }
   }
 );
