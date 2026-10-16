@@ -8,6 +8,7 @@ export default defineAstroPaperConfig({
     author: "zrhe2016",
     profile: "https://github.com/i-zrhe2016",
     ogImage: "default-og.jpg",
+    googleVerification: "Sw2idzCv-Au_Fz6JsU8I04rIpqa3dK6jhOqK4w_PoO0",
     lang: "en",
     timezone: "Asia/Shanghai",
     dir: "ltr",
