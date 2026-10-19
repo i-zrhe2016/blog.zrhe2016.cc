@@ -6,8 +6,16 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/admin", "/admin/*", "/api/admin/*"],
+    "run_worker_first": ["/admin", "/admin/*", "/api/admin/*", "/api/comments"],
   },
+  "d1_databases": [
+    {
+      "binding": "COMMENTS_DB",
+      "database_name": "blog-comments",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
   "previews": {},
   "main": "worker/index.ts",
   "vars": {
