@@ -27,6 +27,12 @@ import config from "@/config";
     </header>
     <div class="admin-shell app-layout">
       <main class="workspace">
+        <section id="comments-admin" aria-labelledby="comments-admin-title">
+          <h1 id="comments-admin-title">评论审核</h1>
+          <div class="actions"><select id="comment-filter"><option value="pending">待审核</option><option value="approved">已通过</option><option value="rejected">已拒绝</option><option value="all">全部</option></select><button id="comment-refresh">刷新</button></div>
+          <div id="comments-admin-list" class="mt-4"></div>
+          <p id="comments-admin-status" role="status"></p>
+        </section>
         <div class="opening">
           <h1>文章编辑</h1>
           <form id="open-form">
@@ -163,6 +169,7 @@ import config from "@/config";
     </dialog>
     <script>
       import "@/admin/editor";
+      import "@/admin/comments";
     </script>
   </body>
 </html>

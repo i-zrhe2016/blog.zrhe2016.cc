@@ -2,6 +2,8 @@
 
 后台入口为 `https://blog.zrhe2016.cc/admin/`。文章仍保存在 GitHub 的 `src/content/posts`，公开网站继续使用 Astro 静态构建。编辑自动保存；预览仅在点击“预览”时生成，点击发布后需要等待 Cloudflare 构建部署。
 
+后台同时提供评论审核。文章页提交的评论先保存为待审核，管理员在“评论审核”面板中通过、拒绝或删除；只有通过的评论会显示在文章页。评论数据保存在 Cloudflare D1，不随文章构建发布。
+
 ## 功能与使用
 
 - 粘贴本站完整 HTTPS 文章链接并点击“打开文章”，直接编辑对应 Markdown。后台不加载文章列表、搜索或筛选，也不批量读取文章元数据。末尾斜线、查询参数和锚点可保留；外站、非文章页面、无效编码与路径穿越会被拒绝。
@@ -53,6 +55,16 @@ GitHub 的目标分支必须允许此 token 直接更新；第一版不走 PR �
 不要将凭据放入 `PUBLIC_*` 变量、Markdown 或仓库。Worker API 固定仓库和分支，只允许指定的文章目录和图片目录。认证与接口响应使用 `no-store`。
 
 ### 3. 自动构建发布
+
+### 评论 D1
+
+首次部署前创建 D1 数据库并将数据库 ID 写入 `wrangler.jsonc` 的 `COMMENTS_DB` 绑定，然后执行：
+
+```bash
+pnpm exec wrangler d1 migrations apply blog-comments --remote
+```
+
+本地开发使用 `--local` 应用同一 migration。公开评论接口为 `/api/comments`，后台审核接口位于 `/api/admin/comments` 并继续受 Cloudflare Access 保护。
 
 在当前 `astro-paper` Worker 的 Settings → Builds 连接 GitHub 仓库，生产分支选择 `main`：
 
