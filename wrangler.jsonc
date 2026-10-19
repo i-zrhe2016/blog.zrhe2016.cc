@@ -12,7 +12,7 @@
     {
       "binding": "COMMENTS_DB",
       "database_name": "blog-comments",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "f352e6b6-256f-44a4-86bd-b98be6930aca",
       "migrations_dir": "migrations"
     }
   ],
