@@ -1,6 +1,6 @@
 # Repository Current State
 
-Last verified: 2026-10-14 @ working tree
+Last verified: 2026-10-19 @ working tree
 
 ## Implemented
 
@@ -15,6 +15,7 @@ Last verified: 2026-10-14 @ working tree
 - About omits contact details from its body; GitHub and email links are available through footer icons.
 - The site title is `zrhe2016`; post list cards display titles and dates without excerpts.
 - The homepage omits the Recent Posts heading and uses compact spacing and `YYYY-MM-DD` dates without calendar icons; other date displays keep their existing format.
+- The homepage lists all eligible posts once in existing updated/publication date descending order, without Featured grouping, pagination, a count limit or an All Posts button; separate `/posts/` routes remain available.
 - Page navigation disables view-transition animations and named post-title/tag transitions.
 - Article pages omit Go back, previous/next post navigation, the back-to-top button and scroll progress indicators.
 - Page text uses proportional system sans fonts with Chinese fallbacks; code and preformatted text retain bundled Google Sans Code.
