@@ -5,8 +5,8 @@ pubDatetime: 2026-10-19T00:00:00+08:00
 tags:
   - kubernetes
   - storage
-draft: false
-modDatetime: 2026-10-19T12:59:42.222Z
+draft: true
+modDatetime: 2026-10-19T13:09:03.368Z
 ---
 
 Kubernetes（K8s）的存储机制，本质上是将底层存储资源抽象成可以被 Pod 声明、分配、挂载、使用和回收的资源管理体系。
