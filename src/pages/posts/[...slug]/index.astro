@@ -117,11 +117,67 @@ const ogImage = ogImageUrl
     </ul>
 
     <ShareLinks />
+
+    <section id="comments" class="mt-10 max-w-2xl" aria-labelledby="comments-title">
+      <h2 id="comments-title" class="text-lg font-bold">评论</h2>
+      <div id="comment-list" class="mt-3 space-y-2" aria-live="polite"></div>
+      <p id="comment-status" class="text-muted-foreground mt-2 text-sm" role="status"></p>
+      <details class="mt-4 max-w-xl rounded border px-3 py-2">
+        <summary class="cursor-pointer text-sm font-medium">发表评论</summary>
+        <form id="comment-form" class="mt-3 space-y-3 text-sm" data-post={Astro.url.pathname}>
+          <label class="block">昵称<input name="nickname" required maxlength="80" class="mt-1 w-full rounded border px-2 py-1.5 text-sm" /></label>
+          <label class="block">邮箱（不会公开）<input name="email" type="email" required maxlength="254" class="mt-1 w-full rounded border px-2 py-1.5 text-sm" /></label>
+          <label class="block">评论<textarea name="content" required maxlength="5000" rows="3" class="mt-1 w-full rounded border px-2 py-1.5 text-sm"></textarea></label>
+          <button type="submit" class="rounded border px-3 py-1.5 text-sm">提交评论</button>
+        </form>
+      </details>
+    </section>
   </main>
   <Footer />
 </PostLayout>
 
 <script is:inline data-astro-rerun>
+  async function initComments() {
+    const form = document.getElementById("comment-form");
+    const list = document.getElementById("comment-list");
+    const status = document.getElementById("comment-status");
+    if (!form || !list || !status) return;
+    const post = form.dataset.post;
+    const render = comments => {
+      list.replaceChildren();
+      if (!comments.length) { status.textContent = "暂无已审核评论。"; return; }
+      status.textContent = "";
+      for (const comment of comments) {
+        const item = document.createElement("article");
+        item.className = "rounded border p-3";
+        const meta = document.createElement("p");
+        meta.className = "text-muted-foreground text-sm";
+        meta.textContent = `${comment.nickname} · ${new Date(comment.created_at).toLocaleString()}`;
+        const body = document.createElement("p");
+        body.className = "mt-2 whitespace-pre-wrap";
+        body.textContent = comment.content;
+        item.append(meta, body); list.append(item);
+      }
+    };
+    try {
+      const response = await fetch(`/api/comments?post=${encodeURIComponent(post)}`);
+      if (!response.ok) throw new Error();
+      render((await response.json()).comments || []);
+    } catch { status.textContent = "评论加载失败，请稍后重试。"; }
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const button = form.querySelector("button"); button.disabled = true;
+      const data = Object.fromEntries(new FormData(form));
+      try {
+        const response = await fetch("/api/comments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...data, post }) });
+        if (!response.ok) throw new Error((await response.json()).error || "提交失败");
+        form.reset(); status.textContent = "评论已提交，管理员审核通过后会显示。";
+      } catch (error) { status.textContent = error.message || "提交失败，请稍后重试。"; }
+      button.disabled = false;
+    });
+  }
+  initComments();
+
   function addHeadingLinks() {
     const headings = Array.from(
       document.querySelectorAll("h2, h3, h4, h5, h6")
