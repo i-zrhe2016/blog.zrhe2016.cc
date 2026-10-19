@@ -19,6 +19,10 @@ interface Env {
   CLOUDFLARE_API_TOKEN?: string;
   CLOUDFLARE_ACCOUNT_ID?: string;
   CLOUDFLARE_WORKER_TAG?: string;
+  COMMENTS_DB?: D1Database;
+}
+interface D1Database {
+  prepare(query: string): { bind(...values: unknown[]): any };
 }
 class HttpError extends Error {
   constructor(
@@ -108,6 +112,66 @@ function encode64(bytes: Uint8Array) {
   for (let i = 0; i < bytes.length; i += 8192)
     s += String.fromCharCode(...bytes.subarray(i, i + 8192));
   return btoa(s);
+}
+const commentPost = (value: string) => /^\/[a-zA-Z0-9\u4e00-\u9fff_./-]+\/?$/.test(value) && value.length <= 300;
+async function publicComments(request: Request, env: Env) {
+  if (!env.COMMENTS_DB) throw new HttpError(503, "评论服务尚未配置");
+  const url = new URL(request.url);
+  if (request.method === "GET") {
+    const post = url.searchParams.get("post") || "";
+    if (!commentPost(post)) throw new HttpError(400, "无效文章标识");
+    const result = await env.COMMENTS_DB.prepare(
+      "SELECT id, nickname, content, created_at FROM comments WHERE post = ? AND status = 'approved' ORDER BY created_at ASC"
+    ).bind(post).all();
+    return json({ comments: result.results || [] });
+  }
+  if (request.method !== "POST") throw new HttpError(405, "请求方法不支持");
+  if (Number(request.headers.get("Content-Length") || 0) > 12 * 1024)
+    throw new HttpError(413, "评论内容过大");
+  let body: any;
+  try { body = await request.json(); } catch { throw new HttpError(400, "请求内容无效"); }
+  const post = String(body?.post || "");
+  const nickname = String(body?.nickname || "").trim();
+  const email = String(body?.email || "").trim();
+  const content = String(body?.content || "").trim();
+  if (!commentPost(post) || !nickname || nickname.length > 80 || !content || content.length > 5000)
+    throw new HttpError(400, "评论字段不符合要求");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)
+    throw new HttpError(400, "邮箱格式无效");
+  await env.COMMENTS_DB.prepare(
+    "INSERT INTO comments (id, post, nickname, email, content, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', ?)"
+  ).bind(crypto.randomUUID(), post, nickname, email, content, new Date().toISOString()).run();
+  return json({ accepted: true }, 202);
+}
+async function adminComments(request: Request, env: Env) {
+  if (!env.COMMENTS_DB) throw new HttpError(503, "评论服务尚未配置");
+  const url = new URL(request.url);
+  if (url.pathname === "/api/admin/comments" && request.method === "GET") {
+    const status = url.searchParams.get("status") || "pending";
+    if (!["pending", "approved", "rejected", "deleted", "all"].includes(status)) throw new HttpError(400, "无效状态");
+    const page = Math.max(1, Math.min(1000, Number(url.searchParams.get("page") || 1)));
+    const limit = 20;
+    const offset = (page - 1) * limit;
+    const query = status === "all"
+      ? "SELECT id, post, nickname, email, content, status, created_at, moderated_at FROM comments ORDER BY created_at DESC LIMIT ? OFFSET ?"
+      : "SELECT id, post, nickname, email, content, status, created_at, moderated_at FROM comments WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    const result = status === "all" ? await env.COMMENTS_DB.prepare(query).bind(limit, offset).all() : await env.COMMENTS_DB.prepare(query).bind(status, limit, offset).all();
+    return json({ comments: result.results || [], page, limit });
+  }
+  const match = url.pathname.match(/^\/api\/admin\/comments\/([^/]+)\/(approve|reject)$/);
+  if (match && request.method === "POST") {
+    const status = match[2] === "approve" ? "approved" : "rejected";
+    const result = await env.COMMENTS_DB.prepare("UPDATE comments SET status = ?, moderated_at = ? WHERE id = ? AND status != 'deleted'").bind(status, new Date().toISOString(), match[1]).run();
+    if (!result.meta?.changes) throw new HttpError(404, "评论不存在");
+    return json({ ok: true });
+  }
+  const deleteMatch = url.pathname.match(/^\/api\/admin\/comments\/([^/]+)$/);
+  if (deleteMatch && request.method === "DELETE") {
+    const result = await env.COMMENTS_DB.prepare("UPDATE comments SET status = 'deleted', moderated_at = ? WHERE id = ?").bind(new Date().toISOString(), deleteMatch[1]).run();
+    if (!result.meta?.changes) throw new HttpError(404, "评论不存在");
+    return json({ ok: true });
+  }
+  throw new HttpError(404, "接口不存在");
 }
 async function getFile(env: Env, path: string, ref: string) {
   return github(
@@ -304,6 +368,9 @@ async function deployment(request: Request, env: Env, sha: string) {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === "/api/comments") {
+      try { return await publicComments(request, env); } catch (e) { return json({ error: e instanceof Error ? e.message : "请求失败" }, e instanceof HttpError ? e.status : 400); }
+    }
     const protectedPath =
       url.pathname === "/admin" ||
       url.pathname.startsWith("/admin/") ||
@@ -330,6 +397,8 @@ export default {
           headers,
         });
       }
+      if (url.pathname === "/api/admin/comments" || url.pathname.startsWith("/api/admin/comments/"))
+        return await adminComments(request, env);
       const branch = env.GITHUB_BRANCH || "main";
       if (url.pathname === "/api/admin/posts" && request.method === "GET") {
         const head = await github(
