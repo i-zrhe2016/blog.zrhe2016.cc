@@ -6,7 +6,13 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/admin", "/admin/*", "/api/admin/*", "/api/comments"],
+    "run_worker_first": [
+      "/admin",
+      "/admin/*",
+      "/api/admin/*",
+      "/api/comments",
+      "/mcp",
+    ],
   },
   "d1_databases": [
     {
@@ -22,5 +28,6 @@
     "GITHUB_REPO": "i-zrhe2016/blog.zrhe2016.cc",
     "GITHUB_BRANCH": "main",
     "ADMIN_ORIGIN": "https://blog.zrhe2016.cc",
+    "MCP_PREVIEW_BRANCH": "preview",
   },
 }
