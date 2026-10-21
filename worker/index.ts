@@ -188,8 +188,11 @@ async function publish(request: Request, env: Env) {
   if (!(source instanceof File) || source.size > 2 * 1024 * 1024)
     throw new HttpError(400, "Markdown 必须以文件上传且不能超过 2 MB");
   const raw = await source.text();
-  validateMarkdown(raw);
+  const { metadata } = validateMarkdown(raw);
   const baseSha = String(form.get("baseSha") || "");
+  const editOnlyMessage =
+    "后台只允许修改已有已发布文章，不允许新建、发布草稿或更改发布状态";
+  if (!baseSha) throw new HttpError(403, editOnlyMessage);
   const branch = env.GITHUB_BRANCH || "main";
   const head = await github(env, `git/ref/heads/${encodeURIComponent(branch)}`);
   let existing: any;
@@ -198,8 +201,18 @@ async function publish(request: Request, env: Env) {
   } catch (e) {
     if (!(e instanceof HttpError && e.status === 404)) throw e;
   }
+  if (!existing) throw new HttpError(403, editOnlyMessage);
+  const originalRaw = decode64(existing.content);
+  const original = validateMarkdown(originalRaw).metadata;
+  if (
+    original.draft ||
+    original.prerelease ||
+    metadata.draft ||
+    metadata.prerelease
+  )
+    throw new HttpError(403, editOnlyMessage);
   const rawBytes = new TextEncoder().encode(raw);
-  if (existing && decode64(existing.content) === raw)
+  if (originalRaw === raw)
     return json({
       sha: head.object.sha,
       fileSha: existing.sha,
