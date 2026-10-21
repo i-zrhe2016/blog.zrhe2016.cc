@@ -20,29 +20,26 @@ Claude Code 负责代码开发和工具调用，Magpie 负责模型接口转换�
 @startuml
 !theme plain
 skinparam backgroundColor #FAF9F5
-skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontName "Microsoft YaHei"
 skinparam defaultFontSize 15
 skinparam defaultFontColor #30302E
 skinparam shadowing false
-skinparam roundCorner 12
-skinparam padding 16
-skinparam nodesep 40
-skinparam ranksep 45
-skinparam ArrowColor #87867F
+skinparam roundCorner 10
+skinparam ArrowColor #A8A69D
 skinparam ArrowThickness 1
-skinparam rectangle {
-  BackgroundColor #F0EEE6
-  BorderColor #C8C5BB
-  BorderThickness 1
-}
+skinparam rectangleBackgroundColor #F1EFE7
+skinparam rectangleBorderColor #D6D2C6
+skinparam rectangleBorderThickness 1
+skinparam rectanglePadding 14
 hide stereotype
 left to right direction
 
-rectangle "Claude Code\n读取 · 执行" as CC
-rectangle "Magpie\n协议转换" as M #EAD5C8
-rectangle "DeepSeek 4.1 Flash\n推理" as DS
-CC <--> M
-M <--> DS
+rectangle "Claude Code" as CC
+rectangle "Magpie" as M #EAD5C8
+rectangle "DeepSeek 4.1 Flash" as DS
+
+CC --> M : 请求 / 响应
+M --> DS : 转发 / 回传
 @enduml
 ```
 
@@ -60,27 +57,24 @@ Magpie 在中间承担适配工作。
 @startuml
 !theme plain
 skinparam backgroundColor #FAF9F5
-skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontName "Microsoft YaHei"
 skinparam defaultFontSize 15
 skinparam defaultFontColor #30302E
 skinparam shadowing false
-skinparam roundCorner 12
-skinparam padding 16
-skinparam nodesep 40
-skinparam ranksep 45
-skinparam ArrowColor #87867F
+skinparam roundCorner 10
+skinparam ArrowColor #A8A69D
 skinparam ArrowThickness 1
-skinparam rectangle {
-  BackgroundColor #F0EEE6
-  BorderColor #C8C5BB
-  BorderThickness 1
-}
+skinparam rectangleBackgroundColor #F1EFE7
+skinparam rectangleBorderColor #D6D2C6
+skinparam rectangleBorderThickness 1
+skinparam rectanglePadding 14
 hide stereotype
 left to right direction
 
-rectangle "Anthropic API" as A
-rectangle "Magpie\n消息 · 工具 · 流式响应" as M #EAD5C8
-rectangle "OpenAI 兼容 API" as B
+rectangle "Anthropic Messages" as A
+rectangle "Magpie\n消息 · 工具 · 流式" as M #EAD5C8
+rectangle "OpenAI 兼容接口" as B
+
 A <--> M
 M <--> B
 @enduml
@@ -98,32 +92,37 @@ M <--> B
 @startuml
 !theme plain
 skinparam backgroundColor #FAF9F5
-skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontName "Microsoft YaHei"
 skinparam defaultFontSize 15
 skinparam defaultFontColor #30302E
 skinparam shadowing false
-skinparam roundCorner 12
-skinparam padding 16
-skinparam nodesep 40
-skinparam ranksep 45
-skinparam ArrowColor #87867F
+skinparam roundCorner 10
+skinparam ArrowColor #A8A69D
 skinparam ArrowThickness 1
-skinparam rectangle {
-  BackgroundColor #F0EEE6
-  BorderColor #C8C5BB
-  BorderThickness 1
-}
+skinparam rectangleBackgroundColor #F1EFE7
+skinparam rectangleBorderColor #D6D2C6
+skinparam rectangleBorderThickness 1
+skinparam rectanglePadding 14
 hide stereotype
-left to right direction
+skinparam sequenceArrowColor #A8A69D
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipantBackgroundColor #F1EFE7
+skinparam sequenceParticipantBorderColor #D6D2C6
+skinparam sequenceLifeLineBorderColor #D6D2C6
+skinparam sequenceLifeLineBackgroundColor #FAF9F5
+skinparam sequenceDividerBackgroundColor #FAF9F5
 
-rectangle "读取代码" as A
-rectangle "模型推理" as B #EAD5C8
-rectangle "执行修改" as C
-rectangle "验证结果" as D
-A --> B
-B --> C
-C --> D
-D -up-> B : 需要修复
+participant "用户" as U
+participant "Claude Code" as CC
+participant "Magpie" as M
+participant "DeepSeek" as DS
+
+U -> CC : 修改需求
+CC -> M : 代码上下文
+M -> DS : 模型请求
+DS --> M : 建议或工具调用
+M --> CC : 兼容响应
+CC --> U : 完成修改
 @enduml
 ```
 
@@ -146,29 +145,30 @@ Claude Code 的开发任务往往不止调用一次模型。
 @startuml
 !theme plain
 skinparam backgroundColor #FAF9F5
-skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontName "Microsoft YaHei"
 skinparam defaultFontSize 15
 skinparam defaultFontColor #30302E
 skinparam shadowing false
-skinparam roundCorner 12
-skinparam padding 16
-skinparam nodesep 40
-skinparam ranksep 45
-skinparam ArrowColor #87867F
+skinparam roundCorner 10
+skinparam ArrowColor #A8A69D
 skinparam ArrowThickness 1
-skinparam rectangle {
-  BackgroundColor #F0EEE6
-  BorderColor #C8C5BB
-  BorderThickness 1
-}
+skinparam rectangleBackgroundColor #F1EFE7
+skinparam rectangleBorderColor #D6D2C6
+skinparam rectangleBorderThickness 1
+skinparam rectanglePadding 14
 hide stereotype
+skinparam legendBackgroundColor #FAF9F5
+skinparam legendBorderColor #D6D2C6
+skinparam legendFontColor #5F5E59
 left to right direction
 
 rectangle "理解代码" as A
 rectangle "生成修改" as B
 rectangle "测试与修复" as C
+
 A --> B
 B --> C
+
 legend bottom
   总成本 = 累计输入 Token × 输入单价 + 累计输出 Token × 输出单价
 endlegend
@@ -193,27 +193,24 @@ endlegend
 @startuml
 !theme plain
 skinparam backgroundColor #FAF9F5
-skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontName "Microsoft YaHei"
 skinparam defaultFontSize 15
 skinparam defaultFontColor #30302E
 skinparam shadowing false
-skinparam roundCorner 12
-skinparam padding 16
-skinparam nodesep 40
-skinparam ranksep 45
-skinparam ArrowColor #87867F
+skinparam roundCorner 10
+skinparam ArrowColor #A8A69D
 skinparam ArrowThickness 1
-skinparam rectangle {
-  BackgroundColor #F0EEE6
-  BorderColor #C8C5BB
-  BorderThickness 1
-}
+skinparam rectangleBackgroundColor #F1EFE7
+skinparam rectangleBorderColor #D6D2C6
+skinparam rectangleBorderThickness 1
+skinparam rectanglePadding 14
 hide stereotype
 left to right direction
 
 rectangle "01  模型服务\nAPI Key · 模型 ID · 地址" as A
 rectangle "02  Magpie\n配置服务 · 验证兼容" as B #EAD5C8
 rectangle "03  Claude Code\n指向网关 · 测试任务" as C
+
 A --> B
 B --> C
 @enduml
