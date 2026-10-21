@@ -29,5 +29,6 @@
     "GITHUB_BRANCH": "main",
     "ADMIN_ORIGIN": "https://blog.zrhe2016.cc",
     "MCP_PREVIEW_BRANCH": "preview",
+    "PREVIEW_ORIGIN": "https://preview-astro-paper.zrhe2016.workers.dev",
   },
 }
