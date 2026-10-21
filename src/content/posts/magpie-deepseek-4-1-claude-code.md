@@ -18,17 +18,31 @@ Claude Code 负责代码开发和工具调用，Magpie 负责模型接口转换�
 
 ```plantuml
 @startuml
+!theme plain
+skinparam backgroundColor #FAF9F5
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 15
+skinparam defaultFontColor #30302E
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam padding 16
+skinparam nodesep 40
+skinparam ranksep 45
+skinparam ArrowColor #87867F
+skinparam ArrowThickness 1
+skinparam rectangle {
+  BackgroundColor #F0EEE6
+  BorderColor #C8C5BB
+  BorderThickness 1
+}
+hide stereotype
 left to right direction
 
-rectangle "Claude Code\n代码开发工具" as CC
-rectangle "Magpie\n协议转换与请求转发" as M
-cloud "DeepSeek 4.1 Flash\n模型推理" as DS
-
-CC --> M : 模型请求
-M --> DS : 转换并转发
-DS --> M : 模型响应
-M --> CC : 返回兼容响应
-
+rectangle "Claude Code\n读取 · 执行" as CC
+rectangle "Magpie\n协议转换" as M #EAD5C8
+rectangle "DeepSeek 4.1 Flash\n推理" as DS
+CC <--> M
+M <--> DS
 @enduml
 ```
 
@@ -44,24 +58,31 @@ Magpie 在中间承担适配工作。
 
 ```plantuml
 @startuml
-top to bottom direction
-
-rectangle "Claude Code 请求\nAnthropic API 格式" as A
-
-rectangle "Magpie" {
-  rectangle "接收请求" as B
-  rectangle "协议转换" as C
-  rectangle "响应适配" as D
+!theme plain
+skinparam backgroundColor #FAF9F5
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 15
+skinparam defaultFontColor #30302E
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam padding 16
+skinparam nodesep 40
+skinparam ranksep 45
+skinparam ArrowColor #87867F
+skinparam ArrowThickness 1
+skinparam rectangle {
+  BackgroundColor #F0EEE6
+  BorderColor #C8C5BB
+  BorderThickness 1
 }
+hide stereotype
+left to right direction
 
-rectangle "DeepSeek 4.1 Flash" as E
-
-A --> B
-B --> C
-C --> E : 模型调用
-E --> D : 推理结果
-D --> A : 兼容响应
-
+rectangle "Anthropic API" as A
+rectangle "Magpie\n消息 · 工具 · 流式响应" as M #EAD5C8
+rectangle "OpenAI 兼容 API" as B
+A <--> M
+M <--> B
 @enduml
 ```
 
@@ -75,22 +96,34 @@ D --> A : 兼容响应
 
 ```plantuml
 @startuml
-start
+!theme plain
+skinparam backgroundColor #FAF9F5
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 15
+skinparam defaultFontColor #30302E
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam padding 16
+skinparam nodesep 40
+skinparam ranksep 45
+skinparam ArrowColor #87867F
+skinparam ArrowThickness 1
+skinparam rectangle {
+  BackgroundColor #F0EEE6
+  BorderColor #C8C5BB
+  BorderThickness 1
+}
+hide stereotype
+left to right direction
 
-:用户提出修改需求;
-:Claude Code 读取项目代码;
-:通过 Magpie 请求模型;
-:DeepSeek 4.1 Flash 分析代码;
-:返回修改建议或工具调用;
-:Claude Code 执行文件修改;
-
-if (需要继续处理?) then (是)
-  :继续调用模型;
-else (否)
-  :输出任务结果;
-endif
-
-stop
+rectangle "读取代码" as A
+rectangle "模型推理" as B #EAD5C8
+rectangle "执行修改" as C
+rectangle "验证结果" as D
+A --> B
+B --> C
+C --> D
+D -up-> B : 需要修复
 @enduml
 ```
 
@@ -111,21 +144,34 @@ Claude Code 的开发任务往往不止调用一次模型。
 
 ```plantuml
 @startuml
+!theme plain
+skinparam backgroundColor #FAF9F5
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 15
+skinparam defaultFontColor #30302E
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam padding 16
+skinparam nodesep 40
+skinparam ranksep 45
+skinparam ArrowColor #87867F
+skinparam ArrowThickness 1
+skinparam rectangle {
+  BackgroundColor #F0EEE6
+  BorderColor #C8C5BB
+  BorderThickness 1
+}
+hide stereotype
 left to right direction
 
-rectangle "开发任务" as TASK
-
-rectangle "模型调用 1\n理解代码" as A
-rectangle "模型调用 2\n生成修改" as B
-rectangle "模型调用 3\n分析错误" as C
-
-rectangle "累计 Token 消耗" as COST
-
-TASK --> A
+rectangle "理解代码" as A
+rectangle "生成修改" as B
+rectangle "测试与修复" as C
 A --> B
 B --> C
-C --> COST
-
+legend bottom
+  总成本 = 累计输入 Token × 输入单价 + 累计输出 Token × 输出单价
+endlegend
 @enduml
 ```
 
@@ -145,22 +191,31 @@ C --> COST
 
 ```plantuml
 @startuml
+!theme plain
+skinparam backgroundColor #FAF9F5
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 15
+skinparam defaultFontColor #30302E
+skinparam shadowing false
+skinparam roundCorner 12
+skinparam padding 16
+skinparam nodesep 40
+skinparam ranksep 45
+skinparam ArrowColor #87867F
+skinparam ArrowThickness 1
+skinparam rectangle {
+  BackgroundColor #F0EEE6
+  BorderColor #C8C5BB
+  BorderThickness 1
+}
+hide stereotype
 left to right direction
 
-node "本地开发环境" {
-  component "Claude Code" as CC
-  component "Magpie" as MG
-}
-
-cloud "模型 API 服务" {
-  component "DeepSeek 4.1 Flash" as DS
-}
-
-CC --> MG : 本地接口
-MG --> DS : API Key + 模型 ID
-DS --> MG : 推理响应
-MG --> CC : 兼容格式
-
+rectangle "01  模型服务\nAPI Key · 模型 ID · 地址" as A
+rectangle "02  Magpie\n配置服务 · 验证兼容" as B #EAD5C8
+rectangle "03  Claude Code\n指向网关 · 测试任务" as C
+A --> B
+B --> C
 @enduml
 ```
 
