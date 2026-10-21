@@ -12,7 +12,6 @@ export const metadataSchema = z.looseObject({
   author: z.string().optional(),
   tags: z.array(z.string()).optional(),
   draft: z.boolean().optional(),
-  prerelease: z.boolean().optional(),
   featured: z.boolean().optional(),
   ogImage: z.string().optional(),
   canonicalURL: z.string().optional(),

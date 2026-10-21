@@ -6,12 +6,6 @@ GITHUB_TOKEN=""
 ACCESS_TEAM_DOMAIN="your-team.cloudflareaccess.com"
 ACCESS_AUD="your-access-application-audience"
 ADMIN_EMAILS="your-email@example.com"
-# MCP publishing endpoint at /mcp. Generate a long random string and treat it like a password.
-MCP_TOKEN=""
-# Branch that `publish_post(status="prerelease")` commits to; Cloudflare builds it as a Preview.
-MCP_PREVIEW_BRANCH="preview"
-# Stable address of the preview deployment, used for returned preview links.
-PREVIEW_ORIGIN=""
 # Optional deployment progress; final success also checks the deployed build marker.
 CLOUDFLARE_API_TOKEN=""
 CLOUDFLARE_ACCOUNT_ID=""

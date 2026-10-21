@@ -16,12 +16,6 @@ import {
 import config from "./astro-paper.config";
 import remarkPlantuml from "./scripts/plantuml.mjs";
 
-// Branch preview builds (Cloudflare Workers Builds) render `prerelease: true`
-// posts; production never does. An explicit PUBLIC_PRERELEASE always wins.
-process.env.PUBLIC_PRERELEASE ??= String(
-  (process.env.WORKERS_CI_BRANCH ?? "main") !== "main"
-);
-
 export default defineConfig({
   site: config.site.url,
   integrations: [
@@ -97,12 +91,6 @@ export default defineConfig({
         access: "public",
         context: "client",
         optional: true,
-      }),
-      // Preview-branch builds render `prerelease: true` posts; production never does.
-      PUBLIC_PRERELEASE: envField.boolean({
-        access: "public",
-        context: "client",
-        default: false,
       }),
     },
   },
