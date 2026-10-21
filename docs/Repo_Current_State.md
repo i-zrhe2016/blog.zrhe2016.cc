@@ -7,6 +7,7 @@ Last verified: 2026-10-19 @ working tree
 - PlantUML Markdown fences use checked-in source/version-addressed SVG assets; local generation and build prerequisites are described in the [PlantUML reference](reference/plantuml.md). Four activity diagrams in `agent-harness` and `skill-eval` describe the workflows; a draft example article demonstrates a sequence diagram.
 - `/admin/` provides a Markdown editor with local IndexedDB drafts, sanitized manual previews and direct opening by public article URL, image staging, GitHub atomic publication and Cloudflare Access authentication; see [admin setup](Admin_Editor.md).
 - Article pages provide D1-backed comments: submissions are pending until approved in the `/admin/` moderation panel; only approved comments are public.
+- `/mcp` exposes a stateless publishing MCP server (`Authorization: Bearer <MCP_TOKEN>`) with list/read/publish/promote/unpublish tools; `publish_post(status: "prerelease")` commits to the `preview` branch for a shareable Cloudflare preview and `promote_post` moves the same content to `main`. `prerelease: true` posts are only rendered by non-`main` branch builds; see [publishing MCP](MCP.md).
 
 
 - Public Bear Blog posts and About content use AstroPaper static pages; source compatibility and content inventory are described in the [migration reference](reference/bearblog-migration.md).

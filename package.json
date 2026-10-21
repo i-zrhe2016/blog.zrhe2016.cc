@@ -16,7 +16,9 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "admin:dev": "pnpm build && wrangler dev --local",
+    "test": "tsx --test tests/admin.test.ts tests/mcp.test.ts",
     "test:admin": "tsx --test tests/admin.test.ts",
+    "test:mcp": "tsx --test tests/mcp.test.ts",
     "test:admin:browser": "tsx --test tests/admin-browser.test.ts"
   },
   "dependencies": {

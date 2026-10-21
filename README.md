@@ -7,3 +7,5 @@ Install the locked dependencies with `pnpm install --frozen-lockfile` (Node >=22
 See [documentation](docs/README.md) for content migration, checks and repository state. Blog content lives in `src/content/posts`; About content lives in `src/content/pages/about.md`. Site metadata and features are configured in `astro-paper.config.ts`.
 
 The Markdown editor at `/admin/` uses browser drafts, Cloudflare Access, and GitHub publication. See [setup and deployment](docs/Admin_Editor.md).
+
+The Worker also serves a publishing MCP server at `/mcp` (bearer token, prerelease branch previews). See [publishing MCP](docs/MCP.md).
