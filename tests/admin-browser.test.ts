@@ -103,6 +103,7 @@ test(
     const context = await browser.newContext();
     try {
       const page = await context.newPage();
+      page.setDefaultTimeout(5_000);
       const errors = await fixture(page);
       let publishRequests = 0;
       page.on("request", request => {
@@ -153,6 +154,11 @@ test(
       for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
       assert.equal(Buffer.concat(chunks).toString(), source);
       await page.locator("#save").click();
+      await page.waitForFunction(() =>
+        document
+          .querySelector("#save-status")
+          ?.textContent?.includes("已保存到当前浏览器")
+      );
       await page.reload();
       await page.locator(".cm-content").waitFor();
       assert.equal(
@@ -196,7 +202,7 @@ test(
 );
 
 test(
-  "browser: Chinese edits, sanitized highlighted preview, drafts, images, new posts and mobile",
+  "browser: existing article edits, local backups, images and mobile without creation controls",
   { timeout: 60_000 },
   async () => {
     const context = await browser.newContext({
@@ -322,18 +328,11 @@ test(
         path: `${process.env.ADMIN_SCREENSHOT_DIR}/admin-mobile.png`,
         fullPage: true,
       });
-    await page.locator("#new").click();
-    await page.locator("#new-slug").fill("new-article");
-    await page.getByRole("button", { name: "创建草稿" }).click();
-    await page.waitForFunction(() =>
-      document
-        .querySelector("#document-path")
-        ?.textContent?.endsWith("new-article.md")
+    assert.equal(
+      await page.locator("#new, #new-dialog, #unpublish").count(),
+      0
     );
-    assert.equal(await page.locator("#title").inputValue(), "未命名文章");
-    await page.reload();
-    await page.locator("#title").waitFor();
-    assert.equal(await page.locator("#title").inputValue(), "未命名文章");
+    assert.equal(await page.locator("#publish").textContent(), "保存修改");
     await page.locator("#local-draft").selectOption(first);
     await page.waitForFunction(
       () =>
@@ -343,6 +342,70 @@ test(
     await context.close();
   }
 );
+
+test("browser: historical new article backups cannot be submitted", async () => {
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    await fixture(page);
+    await page.evaluate(async source => {
+      await new Promise<void>((resolve, reject) => {
+        const opening = indexedDB.open("blog-admin-v1", 1);
+        opening.onsuccess = () => {
+          const db = opening.result;
+          const tx = db.transaction("drafts", "readwrite");
+          tx.objectStore("drafts").put({
+            path: "src/content/posts/legacy.md",
+            raw: source,
+            baseRaw: "",
+            baseSha: "",
+            images: [],
+            updatedAt: Date.now(),
+          });
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        };
+        opening.onerror = () => reject(opening.error);
+      });
+    }, raw("历史新文章"));
+    await page.reload();
+    await page.waitForFunction(
+      () =>
+        document.querySelector<HTMLInputElement>("#title")?.value ===
+        "历史新文章"
+    );
+    assert.ok(await page.locator("#publish").isDisabled());
+    assert.ok(await page.locator("#export").isEnabled());
+  } finally {
+    await context.close();
+  }
+});
+
+test("browser: source cannot turn an existing article into a draft", async () => {
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    await fixture(page);
+    await openFirst(page);
+    let writes = 0;
+    page.on("request", request => {
+      if (request.url().endsWith("/api/admin/publish")) writes++;
+    });
+    await page
+      .locator(".cm-content")
+      .fill(raw("禁止下架").replace("---\ntitle:", "---\ndraft: true\ntitle:"));
+    await page.locator("#publish").click();
+    await page.waitForFunction(() =>
+      document.querySelector("#notice")?.textContent?.includes("只允许修改")
+    );
+    assert.equal(writes, 0);
+  } finally {
+    await context.close();
+  }
+});
 
 test(
   "browser: publishing preserves exact Markdown, recovers response loss and handles conflicts",
@@ -459,16 +522,7 @@ test(
       document.querySelector("#notice")?.textContent?.includes("登录已过期")
     );
     assert.equal(await page.locator("#title").inputValue(), "第一篇");
-    await page.locator("#new").click();
-    await page.locator("#new-slug").fill("auth-failure");
-    await page.getByRole("button", { name: "创建草稿" }).click();
-    await page.waitForFunction(() =>
-      document.querySelector("#notice")?.textContent?.includes("登录已过期")
-    );
-    assert.ok(
-      await page.locator("#new-dialog").isVisible(),
-      "auth failure is not a missing filename"
-    );
+    assert.equal(await page.locator("#new, #new-dialog").count(), 0);
     assert.equal(await page.locator("#title").inputValue(), "第一篇");
     assert.deepEqual(errors, []);
     await context.close();

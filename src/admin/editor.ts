@@ -218,7 +218,7 @@ function loadDraft(draft: Draft) {
     ? "已恢复本地草稿 · 有未发布修改"
     : "与仓库版本一致";
   $("deploy-status").textContent = "";
-  $("unpublish").hidden = !draft.baseSha;
+  $("publish").toggleAttribute("disabled", !draft.baseSha);
   formFromSource();
   resetObjectUrls();
   selectView("edit");
@@ -323,8 +323,6 @@ function setBusy(value: boolean) {
   publishing = value;
   for (const id of [
     "publish",
-    "unpublish",
-    "new",
     "remote",
     "image",
     "open-link",
@@ -343,19 +341,27 @@ function setBusy(value: boolean) {
   });
   renderRecovery();
 }
-async function publish(unpublish = false) {
+async function publish() {
   if (!current || publishing) return;
-  if (
-    unpublish &&
-    !confirm("下架会将文章标记为草稿，重新部署后从公开博客移除。确认下架？")
-  )
-    return;
   try {
     const { metadata, body } = validateMarkdown(current.raw);
-    const updated: Metadata = { ...metadata, draft: unpublish };
-    if (current.baseSha) updated.modDatetime = new Date().toISOString();
+    const original = validateMarkdown(current.baseRaw).metadata;
+    if (
+      !current.baseSha ||
+      original.draft ||
+      original.prerelease ||
+      metadata.draft ||
+      metadata.prerelease
+    )
+      throw new Error(
+        "后台只允许修改已有已发布文章，不允许新建、发布草稿或更改发布状态"
+      );
+    const updated: Metadata = {
+      ...metadata,
+      modDatetime: new Date().toISOString(),
+    };
     const raw =
-      current.pendingRaw === current.raw && metadata.draft === unpublish
+      current.pendingRaw === current.raw
         ? current.raw
         : joinMarkdown(updated, body);
     current.pendingRaw = raw;
@@ -547,9 +553,6 @@ async function init() {
   $("publish").onclick = () => {
     void publish();
   };
-  $("unpublish").onclick = () => {
-    void publish(true);
-  };
   $("remote").onclick = () => {
     void compareRemote().catch(failure);
   };
@@ -632,51 +635,6 @@ async function init() {
       selectView(mode);
       if (mode === "preview") void preview();
     };
-  $("new").onclick = () => {
-    input("new-slug").value = "";
-    $<HTMLDialogElement>("new-dialog").showModal();
-  };
-  $("cancel-new").onclick = () => $<HTMLDialogElement>("new-dialog").close();
-  $("new-form").onsubmit = event => {
-    event.preventDefault();
-    if (publishing) return;
-    const revision = ++openRevision;
-    void (async () => {
-      const path = validatePostPath(
-        `src/content/posts/${input("new-slug").value.trim()}.md`
-      );
-      if (drafts.has(path)) throw new Error("文件名已存在，请换一个名称");
-      try {
-        await api(`post?path=${encodeURIComponent(path)}`);
-        throw new Error("文件名已存在，请换一个名称");
-      } catch (error) {
-        if (!(error instanceof ApiError && error.status === 404)) throw error;
-      }
-      await save();
-      if (revision !== openRevision || publishing) return;
-      const raw = joinMarkdown(
-        {
-          title: "未命名文章",
-          description: "",
-          pubDatetime: new Date().toISOString(),
-          tags: [],
-          draft: true,
-        },
-        "\n开始写作…\n"
-      );
-      loadDraft({
-        path,
-        raw,
-        baseRaw: "",
-        baseSha: "",
-        images: [],
-        updatedAt: Date.now(),
-      });
-      await save();
-      $<HTMLDialogElement>("new-dialog").close();
-      message("新文章已创建为本地草稿，填写摘要后即可发布。");
-    })().catch(failure);
-  };
   window.addEventListener("beforeunload", event => {
     if (publishing || (current && current.raw !== persistedRaw)) {
       event.preventDefault();

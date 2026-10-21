@@ -29,7 +29,15 @@ import config from "@/config";
       <main class="workspace">
         <section id="comments-admin" aria-labelledby="comments-admin-title">
           <h1 id="comments-admin-title">评论审核</h1>
-          <div class="actions"><select id="comment-filter"><option value="pending">待审核</option><option value="approved">已通过</option><option value="rejected">已拒绝</option><option value="all">全部</option></select><button id="comment-refresh">刷新</button></div>
+          <div class="actions">
+            <select id="comment-filter"
+              ><option value="pending">待审核</option><option value="approved"
+                >已通过</option
+              ><option value="rejected">已拒绝</option><option value="all"
+                >全部</option
+              ></select
+            ><button id="comment-refresh">刷新</button>
+          </div>
           <div id="comments-admin-list" class="mt-4"></div>
           <p id="comments-admin-status" role="status"></p>
         </section>
@@ -44,25 +52,25 @@ import config from "@/config";
                 required
                 placeholder="https://blog.zrhe2016.cc/posts/article"
               /><button id="open-link" type="submit" class="primary"
-                >打开文章</button>
+                >打开文章</button
+              >
             </div>
           </form>
           <div class="draft-controls">
-            <button id="new" class="primary">＋ 新建</button><label
-              for="local-draft">恢复本地草稿</label
-            ><select id="local-draft"
-              ><option value="">选择本地草稿…</option></select>
+            <label for="local-draft">恢复本地修改</label><select
+              id="local-draft"><option value="">选择本地草稿…</option></select
+            >
           </div>
           <p class="storage-note">
-            草稿仅保存在当前浏览器。清除浏览器数据会丢失未发布修改，可导出
+            编辑备份仅保存在当前浏览器。清除浏览器数据会丢失未提交修改，可导出
             Markdown 备份。
           </p>
         </div>
         <div id="notice" role="status" aria-live="polite"></div>
         <div id="empty">
-          <span class="empty-mark">Md</span><h2>写下新的想法</h2><p>
-            粘贴博客文章链接，或新建文章开始编辑。
-          </p><p>点击预览 · 本地自动保存 · 点击发布上线</p>
+          <span class="empty-mark">Md</span><h2>修改已有文章</h2><p>
+            粘贴已发布的博客文章链接开始编辑。后台不支持新建文章或发布草稿。
+          </p><p>点击预览 · 本地自动备份 · 保存修改后等待部署</p>
         </div>
         <section id="editing" hidden aria-label="文章编辑器">
           <div class="document-header">
@@ -71,11 +79,12 @@ import config from "@/config";
                 尚未修改
               </p>
             </div><div class="actions">
-              <button id="save">保存草稿</button><button id="export"
+              <button id="save">本地备份</button><button id="export"
                 >导出 MD</button
-              ><button id="remote">读取远端比较</button><button id="unpublish"
-                >下架</button
-              ><button id="publish" class="primary">发布文章</button>
+              ><button id="remote">读取远端比较</button><button
+                id="publish"
+                class="primary">保存修改</button
+              >
             </div>
           </div>
           <p id="deploy-status" role="status" aria-live="polite"></p>
@@ -134,25 +143,6 @@ import config from "@/config";
         </section>
       </main>
     </div>
-    <dialog id="new-dialog">
-      <form id="new-form">
-        <h2>新建文章</h2><label
-          >文件名<input
-            id="new-slug"
-            placeholder="my-new-post"
-            required
-            pattern="[a-zA-Z0-9\u4e00-\u9fff][a-zA-Z0-9\u4e00-\u9fff_-]*"
-          /></label
-        ><p>使用英文、中文、数字、短横线或下划线。创建后网址固定。</p><div
-          class="actions"
-        >
-          <button type="button" id="cancel-new">取消</button><button
-            type="submit"
-            class="primary">创建草稿</button
-          >
-        </div>
-      </form>
-    </dialog>
     <dialog id="compare-dialog">
       <h2>远端版本比较</h2><p>
         本地修改不会自动覆盖远端。先导出本地版本，再选择基于远端重新编辑。

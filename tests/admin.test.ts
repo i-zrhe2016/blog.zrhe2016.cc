@@ -378,9 +378,11 @@ test("downloading article preserves UTF-8 and code whitespace", async t => {
   assert.equal(response.status, 200);
   assert.equal(((await response.json()) as any).markdown, oldRaw);
 });
-test("new articles can be created; existing names cannot be overwritten", async t => {
+test("admin cannot create articles, even with a forged base SHA", async t => {
   const calls = mockGithub(t);
-  assert.equal((await worker.fetch(request(newRaw, ""), env())).status, 409);
+  const missingBase = await worker.fetch(request(newRaw, ""), env());
+  assert.equal(missingBase.status, 403);
+  assert.match(((await missingBase.json()) as any).error, /只允许修改/);
   assert.ok(calls.every(c => c.method === "GET"));
   t.mock.restoreAll();
   const absent = mockGithub(t);
@@ -393,9 +395,33 @@ test("new articles can be created; existing names cannot be overwritten", async 
         ? Response.json({}, { status: 404 })
         : mock(resource, init)
   );
-  assert.equal((await worker.fetch(request(newRaw, ""), env())).status, 200);
-  assert.ok(absent.some(c => c.method === "PATCH"));
+  for (const base of ["", "forged"]) {
+    const response = await worker.fetch(request(newRaw, base), env());
+    assert.equal(response.status, 403);
+    assert.match(((await response.json()) as any).error, /只允许修改/);
+  }
+  assert.ok(absent.every(c => c.method === "GET"));
 });
+for (const field of ["draft", "prerelease"]) {
+  test(`admin cannot publish ${field} articles or change publication state`, async t => {
+    const hidden = joinMarkdown(
+      { ...splitMarkdown(oldRaw).metadata, [field]: true },
+      "正文"
+    );
+    for (const [existing, submitted] of [
+      [hidden, newRaw],
+      [hidden, hidden],
+      [oldRaw, hidden],
+    ]) {
+      const calls = mockGithub(t, { existing });
+      const response = await worker.fetch(request(submitted), env());
+      assert.equal(response.status, 403);
+      assert.match(((await response.json()) as any).error, /只允许修改/);
+      assert.ok(calls.every(c => c.method === "GET"));
+      t.mock.restoreAll();
+    }
+  });
+}
 test("invalid dates cannot reach a GitHub mutation", async t => {
   const calls = mockGithub(t);
   assert.equal(
