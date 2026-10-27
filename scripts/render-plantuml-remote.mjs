@@ -13,7 +13,7 @@ async function walk(dir) {
     if (entry.isDirectory()) await walk(path);
     else if (/\.mdx?$/.test(entry.name)) {
       const source = await readFile(path, "utf8");
-      const matches = source.matchAll(/```plantuml\r?\n([\s\S]*?)\r?\n```/g);
+      const matches = source.matchAll(/^```plantuml(?:[\t ]+[^\r\n]*)?\r?\n([\s\S]*?)\r?\n```[\t ]*$/gm);
       for (const match of matches) {
         const asset = diagramAsset(match[1]);
         try { await access(asset.path); continue; } catch {}
