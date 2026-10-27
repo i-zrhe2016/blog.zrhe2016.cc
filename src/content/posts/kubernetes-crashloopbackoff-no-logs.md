@@ -26,18 +26,18 @@ start
 :创建 ZooKeeper Pod;
 :拉取私有仓库镜像;
 if (镜像拉取成功?) then (否)
-  #FFE5E5:ImagePullBackOff;
+  :ImagePullBackOff;
   :修复镜像拉取问题;
 endif
 :启动 ZooKeeper 容器;
 :执行 zkServer.sh;
 if (存在 zoo.cfg?) then (否)
-  #FFE5E5:ZooKeeper 启动失败;
+  :ZooKeeper 启动失败;
   :容器主进程退出;
   :Kubelet 尝试重启容器;
-  #FFE5E5:CrashLoopBackOff;
+  :CrashLoopBackOff;
 else (是)
-  #E5F5E5:ZooKeeper 正常启动;
+  :ZooKeeper 正常启动;
 endif
 stop
 @enduml
@@ -140,7 +140,7 @@ else (否)
   :使用调试容器或覆盖启动命令;
 endif
 if (配置文件缺失?) then (是)
-  #FFE5E5:修复 Dockerfile 或配置挂载;
+  :修复 Dockerfile 或配置挂载;
 else (否)
   :继续检查资源、探针和依赖服务;
 endif
