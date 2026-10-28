@@ -8,7 +8,7 @@ tags:
   - 故障排查
 draft: false
 prerelease: true
-modDatetime: 2026-10-28T05:43:35.035Z
+modDatetime: 2026-10-28T05:48:30.221Z
 ---
 
 故障原因：Java 编译版本与容器运行版本不兼容。
@@ -49,7 +49,6 @@ skinparam ArrowColor #6E6E80
 skinparam ArrowThickness 1
 skinparam nodesep 40
 skinparam ranksep 40
-skinparam Padding 16
 skinparam rectangle {
   BackgroundColor #F7F7F8
   BorderColor #D9D9E3
@@ -97,7 +96,6 @@ skinparam ArrowColor #6E6E80
 skinparam ArrowThickness 1
 skinparam nodesep 40
 skinparam ranksep 40
-skinparam Padding 16
 skinparam rectangle {
   BackgroundColor #F7F7F8
   BorderColor #D9D9E3
@@ -154,7 +152,6 @@ skinparam ArrowColor #6E6E80
 skinparam ArrowThickness 1
 skinparam nodesep 40
 skinparam ranksep 40
-skinparam Padding 16
 skinparam rectangle {
   BackgroundColor #F7F7F8
   BorderColor #D9D9E3
@@ -204,7 +201,6 @@ skinparam ArrowColor #6E6E80
 skinparam ArrowThickness 1
 skinparam nodesep 40
 skinparam ranksep 40
-skinparam Padding 16
 skinparam rectangle {
   BackgroundColor #F7F7F8
   BorderColor #D9D9E3
@@ -284,7 +280,6 @@ skinparam ArrowColor #6E6E80
 skinparam ArrowThickness 1
 skinparam nodesep 40
 skinparam ranksep 40
-skinparam Padding 16
 skinparam rectangle {
   BackgroundColor #F7F7F8
   BorderColor #D9D9E3
