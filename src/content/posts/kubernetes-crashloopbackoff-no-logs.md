@@ -7,7 +7,7 @@ tags:
   - zookeeper
   - troubleshooting
 draft: false
-modDatetime: 2026-10-28T06:00:39.469Z
+modDatetime: 2026-10-28T06:16:28.689Z
 ---
 
 ## 一、真实故障总结
@@ -466,16 +466,8 @@ skinparam titleFontSize 16
 
 title ZooKeeper 配置修复前后对比
 left to right direction
-rectangle "修复前" #FFFFFF {
-  file "zoo_sample.cfg" as A
-  rectangle "zkServer.sh" as B
-  rectangle "查找 zoo.cfg" as C
-  rectangle "启动失败" as D
-  A -[hidden]-> B
-  B --> C
-  C --> D : 文件不存在
-}
-rectangle "修复后" #FFFFFF {
+' PlantUML 在 left to right 下会把后声明的分组排在上方，因此先写「修复后」
+rectangle "修复后" {
   file "zoo_sample.cfg" as E
   file "zoo.cfg" as F
   rectangle "zkServer.sh" as G
@@ -483,6 +475,15 @@ rectangle "修复后" #FFFFFF {
   E --> F : 复制并重命名
   F --> G
   G --> H
+}
+rectangle "修复前" {
+  file "zoo_sample.cfg" as A
+  rectangle "zkServer.sh" as B
+  rectangle "查找 zoo.cfg" as C
+  rectangle "启动失败" as D
+  A -[hidden]-> B
+  B --> C
+  C --> D : 文件不存在
 }
 @enduml
 ```
