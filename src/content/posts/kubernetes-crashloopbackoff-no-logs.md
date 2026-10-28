@@ -1,9 +1,13 @@
 ---
-title: "Kubernetes 故障案例：CrashLoopBackOff，但没有日志"
-description: "从 ZooKeeper 缺少 zoo.cfg 的启动故障，理解 CrashLoopBackOff、容器日志与配置排查的完整链路。"
+title: Kubernetes 故障案例：CrashLoopBackOff，但没有日志
+description: 从 ZooKeeper 缺少 zoo.cfg 的启动故障，理解 CrashLoopBackOff、容器日志与配置排查的完整链路。
 pubDatetime: 2026-10-27T08:00:00Z
-tags: [kubernetes, zookeeper, troubleshooting]
+tags:
+  - kubernetes
+  - zookeeper
+  - troubleshooting
 draft: false
+modDatetime: 2026-10-28T06:00:39.469Z
 ---
 
 ## 一、真实故障总结
@@ -21,6 +25,58 @@ draft: false
 
 ```plantuml ZooKeeper 故障发生流程
 @startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
+skinparam sequence {
+  ParticipantBackgroundColor #F7F7F8
+  ParticipantBorderColor #D9D9E3
+  ParticipantFontColor #202123
+  LifeLineBorderColor #ACACBE
+  LifeLineBackgroundColor #FFFFFF
+  ArrowColor #6E6E80
+  ArrowFontColor #202123
+  GroupBackgroundColor #FFFFFF
+  GroupBodyBackgroundColor #FFFFFF
+  GroupBorderColor #D9D9E3
+  GroupFontColor #202123
+}
+skinparam note {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam file {
+  BackgroundColor #FFFFFF
+  BorderColor #ACACBE
+  FontColor #202123
+}
+skinparam titleFontColor #202123
+skinparam titleFontSize 16
+
 title ZooKeeper 故障发生流程
 start
 :创建 ZooKeeper Pod;
@@ -49,6 +105,58 @@ stop
 
 ```plantuml Kubernetes 容器重启机制
 @startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
+skinparam sequence {
+  ParticipantBackgroundColor #F7F7F8
+  ParticipantBorderColor #D9D9E3
+  ParticipantFontColor #202123
+  LifeLineBorderColor #ACACBE
+  LifeLineBackgroundColor #FFFFFF
+  ArrowColor #6E6E80
+  ArrowFontColor #202123
+  GroupBackgroundColor #FFFFFF
+  GroupBodyBackgroundColor #FFFFFF
+  GroupBorderColor #D9D9E3
+  GroupFontColor #202123
+}
+skinparam note {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam file {
+  BackgroundColor #FFFFFF
+  BorderColor #ACACBE
+  FontColor #202123
+}
+skinparam titleFontColor #202123
+skinparam titleFontSize 16
+
 title Kubernetes 容器重启机制
 participant "Kubelet" as K
 participant "Container Runtime" as C
@@ -87,6 +195,58 @@ end note
 
 ```plantuml Kubernetes 日志产生机制
 @startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
+skinparam sequence {
+  ParticipantBackgroundColor #F7F7F8
+  ParticipantBorderColor #D9D9E3
+  ParticipantFontColor #202123
+  LifeLineBorderColor #ACACBE
+  LifeLineBackgroundColor #FFFFFF
+  ArrowColor #6E6E80
+  ArrowFontColor #202123
+  GroupBackgroundColor #FFFFFF
+  GroupBodyBackgroundColor #FFFFFF
+  GroupBorderColor #D9D9E3
+  GroupFontColor #202123
+}
+skinparam note {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam file {
+  BackgroundColor #FFFFFF
+  BorderColor #ACACBE
+  FontColor #202123
+}
+skinparam titleFontColor #202123
+skinparam titleFontSize 16
+
 title Kubernetes 日志产生机制
 rectangle "容器内部" {
   rectangle "应用主进程" as App
@@ -122,6 +282,58 @@ end note
 
 ```plantuml CrashLoopBackOff 无日志排障决策树
 @startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
+skinparam sequence {
+  ParticipantBackgroundColor #F7F7F8
+  ParticipantBorderColor #D9D9E3
+  ParticipantFontColor #202123
+  LifeLineBorderColor #ACACBE
+  LifeLineBackgroundColor #FFFFFF
+  ArrowColor #6E6E80
+  ArrowFontColor #202123
+  GroupBackgroundColor #FFFFFF
+  GroupBodyBackgroundColor #FFFFFF
+  GroupBorderColor #D9D9E3
+  GroupFontColor #202123
+}
+skinparam note {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam file {
+  BackgroundColor #FFFFFF
+  BorderColor #ACACBE
+  FontColor #202123
+}
+skinparam titleFontColor #202123
+skinparam titleFontSize 16
+
 title CrashLoopBackOff 无日志排障决策树
 start
 :发现 CrashLoopBackOff;
@@ -200,9 +412,61 @@ args:
 
 ```plantuml ZooKeeper 配置修复前后对比
 @startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
+skinparam sequence {
+  ParticipantBackgroundColor #F7F7F8
+  ParticipantBorderColor #D9D9E3
+  ParticipantFontColor #202123
+  LifeLineBorderColor #ACACBE
+  LifeLineBackgroundColor #FFFFFF
+  ArrowColor #6E6E80
+  ArrowFontColor #202123
+  GroupBackgroundColor #FFFFFF
+  GroupBodyBackgroundColor #FFFFFF
+  GroupBorderColor #D9D9E3
+  GroupFontColor #202123
+}
+skinparam note {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam file {
+  BackgroundColor #FFFFFF
+  BorderColor #ACACBE
+  FontColor #202123
+}
+skinparam titleFontColor #202123
+skinparam titleFontSize 16
+
 title ZooKeeper 配置修复前后对比
 left to right direction
-rectangle "修复前" #FFE5E5 {
+rectangle "修复前" #FFFFFF {
   file "zoo_sample.cfg" as A
   rectangle "zkServer.sh" as B
   rectangle "查找 zoo.cfg" as C
@@ -211,7 +475,7 @@ rectangle "修复前" #FFE5E5 {
   B --> C
   C --> D : 文件不存在
 }
-rectangle "修复后" #E5F5E5 {
+rectangle "修复后" #FFFFFF {
   file "zoo_sample.cfg" as E
   file "zoo.cfg" as F
   rectangle "zkServer.sh" as G
@@ -255,6 +519,58 @@ RUN cp /opt/zookeeper/conf/zoo_sample.cfg \
 
 ```plantuml 故障的因果关系
 @startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
+skinparam sequence {
+  ParticipantBackgroundColor #F7F7F8
+  ParticipantBorderColor #D9D9E3
+  ParticipantFontColor #202123
+  LifeLineBorderColor #ACACBE
+  LifeLineBackgroundColor #FFFFFF
+  ArrowColor #6E6E80
+  ArrowFontColor #202123
+  GroupBackgroundColor #FFFFFF
+  GroupBodyBackgroundColor #FFFFFF
+  GroupBorderColor #D9D9E3
+  GroupFontColor #202123
+}
+skinparam note {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam file {
+  BackgroundColor #FFFFFF
+  BorderColor #ACACBE
+  FontColor #202123
+}
+skinparam titleFontColor #202123
+skinparam titleFontSize 16
+
 title 故障的因果关系
 top to bottom direction
 rectangle "Dockerfile 遗漏配置文件重命名" as A
