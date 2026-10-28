@@ -8,6 +8,7 @@ tags:
   - 故障排查
 draft: false
 prerelease: true
+modDatetime: 2026-10-28T05:43:35.035Z
 ---
 
 故障原因：Java 编译版本与容器运行版本不兼容。
@@ -38,10 +39,33 @@ runtime supports up to 61.0
 
 ```plantuml
 @startuml
-skinparam monochrome true
-skinparam backgroundColor white
+skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam Padding 16
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
 
 top to bottom direction
 
@@ -63,10 +87,33 @@ R2 --> P2
 
 ```plantuml
 @startuml
-skinparam monochrome true
-skinparam backgroundColor white
+skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam Padding 16
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
 
 rectangle "应用程序\nJava 21 编译" as A
 rectangle "容器运行环境\nJava 17" as B
@@ -97,10 +144,33 @@ Java 17 无法直接运行 Java 21 编译的字节码。
 
 ```plantuml
 @startuml
-skinparam monochrome true
-skinparam backgroundColor white
+skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam Padding 16
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
 
 start
 :Deployment 滚动更新;
@@ -124,10 +194,33 @@ stop
 
 ```plantuml
 @startuml
-skinparam monochrome true
-skinparam backgroundColor white
+skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam Padding 16
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
 
 start
 :发现 CrashLoopBackOff;
@@ -181,10 +274,33 @@ IMAGE_ID:.status.containerStatuses[*].imageID
 
 ```plantuml
 @startuml
-skinparam monochrome true
-skinparam backgroundColor white
+skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam roundcorner 8
+skinparam roundcorner 16
+skinparam defaultFontName "SansSerif"
+skinparam defaultFontSize 14
+skinparam defaultFontColor #202123
+skinparam ArrowColor #6E6E80
+skinparam ArrowThickness 1
+skinparam nodesep 40
+skinparam ranksep 40
+skinparam Padding 16
+skinparam rectangle {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+}
+skinparam activity {
+  BackgroundColor #F7F7F8
+  BorderColor #D9D9E3
+  FontColor #202123
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #ACACBE
+  DiamondFontColor #202123
+  StartColor #202123
+  EndColor #202123
+  BarColor #6E6E80
+}
 
 start
 :确认 Java 版本不兼容;
