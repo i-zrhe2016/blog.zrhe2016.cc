@@ -6,6 +6,13 @@ tags:
   - Kubernetes
   - 容器镜像
   - 故障排查
+  - ImagePullBackOff
+  - Docker
+  - 镜像仓库
+  - imagePullPolicy
+  - imagePullSecrets
+  - crictl
+  - DevOps
 draft: false
 prerelease: true
 ---
