@@ -40,7 +40,7 @@ corepack pnpm exec wrangler secret put MCP_TOKEN
 3. 把该地址填进 `PREVIEW_ORIGIN`。若使用自定义域名，同样填解析后的完整地址（不带结尾斜线）。
 4. 预览地址默认是公开的。如需只让自己访问，可为它单独创建一个 Cloudflare Access 应用；MCP 客户端本身不访问该地址，Access 不影响发布。
 
-构建期通过 `WORKERS_CI_BRANCH` 判断：非 `main` 分支的构建会把带 `prerelease: true` 的文章一起生成，`main` 构建始终排除它们。因此预览站能看到预发布文章，正式站不会。本地开发时所有文章都可见（`import.meta.env.DEV`）。
+构建期通过 `WORKERS_CI_BRANCH` 判断：非 `main` 分支的构建会把带 `prerelease: true` 的文章一起生成，`main` 构建始终排除它们。预览站仅显示预发布文章，正式站仅显示正式文章。本地开发时所有文章都可见（`import.meta.env.DEV`）。
 
 ## 3. 客户端接入
 
@@ -102,7 +102,11 @@ publish_post(status: "prerelease")  →  提交 preview 分支  →  Cloudflare 
 promote_post                        →  同一份内容提交 main（去掉 prerelease）→  正式构建
 ```
 
-提升之后预览分支仍然停在旧提交上，可以继续在上面预发布下一篇文章；需要把它归位时调用 `sync_preview`。若预览分支上有尚未提升的改动，`sync_preview` 会拒绝并列出会被丢弃的文件，确认后才用 `force: true`。
+预览站只展示 `prerelease: true` 的文章，不展示正式文章。每次预发布会在同一个提交中移除上一篇预览文章，因此预览只保留当前待发布的一篇；旧稿仍可从 Git 历史找回。
+
+`promote_post` 会将文章与预览分支的上传图片、PlantUML 图表一起提交到正式分支，成功后从预览分支移除该文章，并返回 `previewCleanup`。若预览文章已有新修改，会保留新内容；清理失败也会明确返回，正式提交不会回滚。移除在预览部署构建完成后生效。
+
+需要归位预览分支时仍可调用 `sync_preview`。若有尚未提升的改动，它会拒绝并列出将被丢弃的文件，确认后才用 `force: true`。归位后预览站没有待发布文章。
 
 ## 6. 本地开发
 

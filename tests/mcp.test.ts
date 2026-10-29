@@ -114,6 +114,19 @@ function mockGithub(
           status: options.compare?.status || "identical",
           files: options.compare?.files || [],
         });
+      if (/git\/trees\/[^/?]+\?recursive=1$/.test(url)) {
+        const ref = url.split("git/trees/")[1].split("?")[0];
+        return Response.json({
+          tree: Object.keys(options.files || {})
+            .filter(key => key.startsWith(`${ref}:`))
+            .map(key => ({
+              path: key.slice(ref.length + 1),
+              type: "blob",
+              mode: "100644",
+              sha: FILE_SHA,
+            })),
+        });
+      }
       if (url.endsWith("git/blobs")) return Response.json({ sha: BLOB });
       if (/git\/commits\/[a-f0-9]{40}$/.test(url) && method === "GET")
         return Response.json({ tree: { sha: "t".repeat(40) } });
@@ -377,8 +390,17 @@ test("promote copies the preview content to main without the marker", async t =>
   const written = blobSource(calls);
   assert.doesNotMatch(written, /prerelease/);
   assert.match(written, /draft: false/);
-  assert.match(written, /modDatetime/);
-  assert.match(calls.at(-1)!.url, /git\/refs\/heads\/main$/);
+  assert.equal(result.result.structuredContent.previewCleanup.cleared, true);
+  assert.match(calls.at(-1)!.url, /git\/refs\/heads\/preview$/);
+  assert.ok(
+    calls.some(
+      c =>
+        c.url.endsWith("git/trees") &&
+        c.body.tree.some(
+          (file: any) => file.path === postPath && file.sha === null
+        )
+    )
+  );
   assert.equal(
     result.result.structuredContent.url,
     "https://blog.example/posts/preview-demo/"
@@ -399,6 +421,135 @@ test("sync_preview refuses to drop unpromoted work unless forced", async t => {
   const result = (await forced.json()) as any;
   assert.equal(result.result.structuredContent.sha, MAIN_HEAD);
   assert.deepEqual(calls.at(-1)!.body, { sha: MAIN_HEAD, force: true });
+});
+test("a new prerelease removes the previous preview in the same commit", async t => {
+  const oldPath = "src/content/posts/old-preview.md";
+  const calls = mockGithub(t, {
+    files: {
+      [`${PREVIEW_HEAD}:${oldPath}`]: markdown.replace(
+        "draft: false",
+        "draft: false\nprerelease: true"
+      ),
+      [`${PREVIEW_HEAD}:src/content/posts/published.md`]: markdown,
+    },
+  });
+  const response = await worker.fetch(
+    call("publish_post", {
+      path: postPath,
+      markdown,
+      status: "prerelease",
+    }),
+    env()
+  );
+  assert.equal(((await response.json()) as any).result.isError, undefined);
+  const tree = calls.find(
+    c => c.url.endsWith("git/trees") && c.method === "POST"
+  )!.body.tree;
+  assert.ok(
+    tree.some((file: any) => file.path === oldPath && file.sha === null)
+  );
+  assert.ok(
+    tree.some((file: any) => file.path === postPath && file.sha === BLOB)
+  );
+  assert.ok(!tree.some((file: any) => file.path.endsWith("published.md")));
+});
+test("promotion transfers missing diagram assets without replacing production assets", async t => {
+  const assetPath = "public/diagrams/plantuml/new.svg";
+  const sharedPath = "public/images/uploads/shared.png";
+  const calls = mockGithub(t, {
+    files: {
+      [`${PREVIEW_HEAD}:${postPath}`]: markdown.replace(
+        "draft: false",
+        "draft: false\nprerelease: true"
+      ),
+      [`${PREVIEW_HEAD}:${assetPath}`]: "<svg/>",
+      [`${PREVIEW_HEAD}:${sharedPath}`]: "preview",
+      [`${MAIN_HEAD}:${sharedPath}`]: "production",
+    },
+  });
+  const response = await worker.fetch(
+    call("promote_post", { path: postPath }),
+    env()
+  );
+  assert.equal(((await response.json()) as any).result.isError, undefined);
+  const tree = calls.find(
+    c => c.url.endsWith("git/trees") && c.method === "POST"
+  )!.body.tree;
+  assert.ok(tree.some((file: any) => file.path === assetPath));
+  assert.ok(!tree.some((file: any) => file.path === sharedPath));
+});
+test("promotion preserves a preview edited concurrently", async t => {
+  const calls = mockGithub(t, {
+    files: {
+      [`${PREVIEW_HEAD}:${postPath}`]: markdown.replace(
+        "draft: false",
+        "draft: false\nprerelease: true"
+      ),
+    },
+  });
+  const fetch = globalThis.fetch;
+  let previewReads = 0;
+  t.mock.method(
+    globalThis,
+    "fetch",
+    async (resource: any, init?: RequestInit) => {
+      const response = await fetch(resource, init);
+      if (
+        String(resource).includes("contents/") &&
+        String(resource).includes(PREVIEW_HEAD) &&
+        ++previewReads === 2
+      ) {
+        return Response.json({
+          sha: "new-preview-sha",
+          content: Buffer.from(markdown).toString("base64"),
+        });
+      }
+      return response;
+    }
+  );
+  const response = await worker.fetch(
+    call("promote_post", { path: postPath }),
+    env()
+  );
+  const result = (await response.json()) as any;
+  assert.equal(result.result.structuredContent.previewCleanup.cleared, false);
+  assert.ok(
+    !calls.some(c => c.method === "PATCH" && c.url.endsWith("/preview"))
+  );
+});
+test("preview builds hide published articles, including after sync", () => {
+  assert.equal(
+    isPostVisible(
+      { pubDatetime: "2026-01-01" },
+      { dev: false, prereleaseBuild: true }
+    ),
+    false
+  );
+  assert.equal(
+    isPostVisible(
+      { pubDatetime: "2026-01-01" },
+      { dev: false, prereleaseBuild: false }
+    ),
+    true
+  );
+});
+test("failed promotion does not clear preview", async t => {
+  const existing = markdown.replace(
+    "draft: false",
+    "draft: false\nprerelease: true"
+  );
+  const calls = mockGithub(t, {
+    files: {
+      [`${PREVIEW_HEAD}:${postPath}`]: existing,
+      [`${MAIN_HEAD}:${postPath}`]: markdown + "\n正式分支的新修改\n",
+    },
+  });
+  const response = await worker.fetch(
+    call("promote_post", { path: postPath, baseSha: "stale" }),
+    env()
+  );
+  assert.equal(((await response.json()) as any).result.isError, true);
+  assert.ok(!calls.some(c => c.method === "PATCH"));
 });
 test("prerelease posts stay hidden outside preview builds", () => {
   const data = { pubDatetime: "2026-01-01T00:00:00Z", prerelease: true };

@@ -164,13 +164,20 @@ async function commitPost(
 ) {
   const rawBytes = new TextEncoder().encode(options.markdown);
   const existing = await existingFile(env, options.path, options.parentSha);
-  if (existing && decode64(existing.content) === options.markdown)
+  if (
+    existing &&
+    decode64(existing.content) === options.markdown &&
+    !options.extraFiles?.length
+  )
     return {
       sha: options.parentSha,
       fileSha: existing.sha,
       recovered: true,
     };
-  if ((existing?.sha || "") !== options.baseSha)
+  if (
+    (existing?.sha || "") !== options.baseSha &&
+    !(existing && decode64(existing.content) === options.markdown)
+  )
     throw new HttpError(
       409,
       `分支 ${options.branch} 上的文章已变化（当前 sha：${existing?.sha || "无文件"}），请先用 get_post 读取该分支后再发布`
@@ -187,6 +194,54 @@ async function commitPost(
     parentSha: options.parentSha,
   });
   return { sha: commit.sha, fileSha: blob.sha, commitUrl: commit.html_url };
+}
+
+async function previewFiles(env: Env, head: string) {
+  const tree = await github(env, `git/trees/${head}?recursive=1`);
+  if (tree.truncated) throw new HttpError(502, "仓库目录过大，无法完整读取");
+  return tree.tree as TreeFile[];
+}
+async function previousPreviews(env: Env, head: string, keep?: string) {
+  const files = await previewFiles(env, head);
+  const removed: TreeFile[] = [];
+  for (const file of files) {
+    if (
+      file.type !== "blob" ||
+      file.path === keep ||
+      !file.path.startsWith("src/content/posts/") ||
+      !file.path.endsWith(".md")
+    )
+      continue;
+    const source = await getFile(env, file.path, head);
+    const { metadata } = validateMarkdown(decode64(source.content));
+    if (metadata.prerelease) removed.push({ ...file, sha: null });
+  }
+  return removed;
+}
+async function clearPreview(env: Env, path: string, fileSha: string) {
+  const branch = previewBranch(env);
+  try {
+    const head = await readBranchHead(env, branch);
+    const file = await existingFile(env, path, head);
+    if (!file) return { cleared: true, sha: head };
+    if (file.sha !== fileSha)
+      return {
+        cleared: false,
+        message: "文章已发布，但预览已有新修改，保留新预览",
+      };
+    const commit = await commitFiles(env, {
+      branch,
+      parentSha: head,
+      message: `content: clear preview ${path.split("/").pop()}`,
+      files: [{ path, mode: "100644", type: "blob", sha: null }],
+    });
+    return { cleared: true, sha: commit.sha };
+  } catch (e) {
+    return {
+      cleared: false,
+      message: `文章已发布，预览清理失败：${message(e)}`,
+    };
+  }
 }
 
 const TOOLS: Record<string, Tool> = {
@@ -238,7 +293,7 @@ const TOOLS: Record<string, Tool> = {
   },
   publish_post: {
     description:
-      "写入文章。status=published 发布到正式分支；prerelease 推到预览分支并返回预览地址；draft 在正式分支标记为草稿。",
+      "写入文章。status=published 发布到正式分支；prerelease 替换上一篇预览，仅预览当前文章；draft 在正式分支标记为草稿。",
     inputSchema: {
       type: "object",
       properties: {
@@ -297,7 +352,14 @@ const TOOLS: Record<string, Tool> = {
         status === "prerelease"
           ? await ensureBranch(env, branch)
           : await readBranchHead(env, branch);
-      const extraFiles = await imageFiles(env, args.images || []);
+      const removed =
+        status === "prerelease"
+          ? await previousPreviews(env, parentSha, path)
+          : [];
+      const extraFiles = [
+        ...removed,
+        ...(await imageFiles(env, args.images || [])),
+      ];
       const result = await commitPost(env, {
         path,
         markdown,
@@ -321,7 +383,7 @@ const TOOLS: Record<string, Tool> = {
   },
   promote_post: {
     description:
-      "把预览分支上的文章提升到正式分支：去掉 prerelease 标记并置为已发布。",
+      "把当前预览文章及图片发布到正式分支，成功提交后自动移除预览文章；返回 previewCleanup 清理结果。",
     inputSchema: {
       type: "object",
       properties: {
@@ -342,18 +404,32 @@ const TOOLS: Record<string, Tool> = {
     async run(env, args) {
       const path = validatePostPath(args.path);
       const preview = previewBranch(env);
-      const { file: previewFile } = await readPost(env, path, preview);
+      const { head: previewHead, file: previewFile } = await readPost(
+        env,
+        path,
+        preview
+      );
       const { metadata, body } = validateMarkdown(
         decode64(previewFile.content)
       );
+      if (!metadata.prerelease)
+        throw new HttpError(409, "该文章不是待发布的预览文章");
       const updated: Record<string, unknown> = {
         ...metadata,
         draft: false,
-        modDatetime: new Date().toISOString(),
       };
       delete updated.prerelease;
       const branch = mainBranch(env);
       const parentSha = await readBranchHead(env, branch);
+      const mainFiles = await previewFiles(env, parentSha);
+      const mainAssets = new Map(mainFiles.map(file => [file.path, file.sha]));
+      const assets = (await previewFiles(env, previewHead)).filter(
+        file =>
+          file.type === "blob" &&
+          !mainAssets.has(file.path) &&
+          (file.path.startsWith("public/images/uploads/") ||
+            file.path.startsWith("public/diagrams/plantuml/"))
+      );
       const result = await commitPost(env, {
         path,
         markdown: joinMarkdown(updated, body),
@@ -361,9 +437,12 @@ const TOOLS: Record<string, Tool> = {
         message: `content: publish ${path.split("/").pop()}`,
         baseSha: args.baseSha || "",
         parentSha,
+        extraFiles: assets,
       });
+      const previewCleanup = await clearPreview(env, path, previewFile.sha);
       return {
         ...result,
+        previewCleanup,
         path,
         branch,
         url: postUrl(env.ADMIN_ORIGIN, path),
@@ -593,7 +672,7 @@ export async function handleMcp(request: Request, env: Env): Promise<Response> {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "blog-publisher", version: "1.0.0" },
         instructions:
-          "发布博客文章。用 publish_post 的 status=prerelease 推到预览分支，审阅后用 promote_post 提升到正式分支。",
+          "发布博客文章。publish_post(status=prerelease) 仅保留当前一篇预览并替换旧预览；审阅后用 promote_post 发布到正式分支并自动移除预览。",
       });
     }
     case "ping":

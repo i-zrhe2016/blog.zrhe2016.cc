@@ -116,7 +116,7 @@ export type TreeFile = {
   path: string;
   mode: string;
   type: string;
-  sha: string;
+  sha: string | null;
 };
 /** Stages `files` in one tree, creates one commit and moves the branch with `force: false`. */
 export async function commitFiles(

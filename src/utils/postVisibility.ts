@@ -20,6 +20,7 @@ export type VisibilityOptions = {
  * - Drafts are always excluded.
  * - `prerelease: true` posts only appear in dev and preview-branch builds,
  *   so pushing one to the production branch never publishes it.
+ * - Preview builds exclude published posts and show only prerelease content.
  * - Scheduled posts stay hidden until `pubDatetime` minus the configured margin.
  */
 export function isPostVisible(
@@ -29,6 +30,7 @@ export function isPostVisible(
   if (data.draft) return false;
   if (data.prerelease && !options.dev && !options.prereleaseBuild) return false;
   if (options.dev) return true;
+  if (options.prereleaseBuild && !data.prerelease) return false;
   const margin = options.margin ?? 0;
   const now = options.now ?? Date.now();
   return now > new Date(data.pubDatetime).getTime() - margin;
