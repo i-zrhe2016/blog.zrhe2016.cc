@@ -1,5 +1,5 @@
 ---
-title: Kubernetes Ingress 503：跨 Namespace 的 Host 冲突
+title: Kubernetes 故障案例：不同 Namespace 的 Ingress Host 冲突导致 503
 pubDatetime: 2026-10-30T00:00:00Z
 description: 当 Pod、Service 和 Endpoint 均正常，Ingress 却返回 503 时，从跨 Namespace 的 Host 与 Path 冲突入手，确认实际生效的路由与后端 Service，并选择合适的隔离方案。
 tags:
