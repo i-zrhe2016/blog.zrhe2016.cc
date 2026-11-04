@@ -10,18 +10,9 @@
       "/admin",
       "/admin/*",
       "/api/admin/*",
-      "/api/comments",
       "/mcp",
     ],
   },
-  "d1_databases": [
-    {
-      "binding": "COMMENTS_DB",
-      "database_name": "blog-comments",
-      "database_id": "f352e6b6-256f-44a4-86bd-b98be6930aca",
-      "migrations_dir": "migrations"
-    }
-  ],
   "previews": {},
   "main": "worker/index.ts",
   "vars": {

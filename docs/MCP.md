@@ -126,6 +126,6 @@ curl -s http://127.0.0.1:8787/mcp -H "Authorization: Bearer $env:MCP_TOKEN" -H "
 
 ## 7. 已知限制
 
-- 预览部署与其他分支共用同一套绑定：预览站的评论会写入正式 D1，`GITHUB_TOKEN` 也与正式环境相同。需要完全隔离时应另建 Cloudflare 环境，本期不做。
+- 预览部署与其他分支共用同一套绑定：`GITHUB_TOKEN` 与正式环境相同。需要完全隔离时应另建 Cloudflare 环境，本期不做。
 - `preview` 分支会随时间落后于 `main`（正式站新增的文章在预览站看不到），用 `sync_preview` 归位。
 - 第一版不提供删除文章、重命名路由与多人协作。
