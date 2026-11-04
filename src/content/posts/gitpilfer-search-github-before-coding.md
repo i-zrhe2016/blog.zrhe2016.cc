@@ -1,7 +1,7 @@
 ---
 title: 写代码前，先搜 GitHub
 description: GitPilfer 提倡先搜索和评估 GitHub 上的现有实现，再决定复用、修改还是从零编写。
-pubDatetime: 2026-11-04T12:00:00Z
+pubDatetime: 2026-11-04T10:00:00Z
 tags:
   - AI
   - GitHub
