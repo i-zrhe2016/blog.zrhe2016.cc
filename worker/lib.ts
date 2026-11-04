@@ -14,13 +14,9 @@ export interface Env {
   CLOUDFLARE_API_TOKEN?: string;
   CLOUDFLARE_ACCOUNT_ID?: string;
   CLOUDFLARE_WORKER_TAG?: string;
-  COMMENTS_DB?: D1Database;
   MCP_TOKEN?: string;
   MCP_PREVIEW_BRANCH?: string;
   PREVIEW_ORIGIN?: string;
-}
-export interface D1Database {
-  prepare(query: string): { bind(...values: unknown[]): any };
 }
 export class HttpError extends Error {
   constructor(
