@@ -8,7 +8,7 @@ tags:
   - 架构
 draft: false
 prerelease: true
-modDatetime: 2026-11-18T03:44:09.575Z
+modDatetime: 2026-11-18T03:49:03.223Z
 ---
 
 Kubernetes 的核心思想：声明期望状态，通过控制循环，让实际状态持续接近期望状态。
@@ -19,17 +19,21 @@ Kubernetes 的核心思想：声明期望状态，通过控制循环，让实际
 
 ```plantuml
 @startuml
-title 声明式管理：关注目标，而不是过程
-skinparam backgroundColor white
+skinparam backgroundColor #F9F9F7
 skinparam shadowing false
-skinparam roundcorner 15
+skinparam roundcorner 16
 skinparam defaultFontName Microsoft YaHei
-skinparam ArrowColor #64748B
-skinparam linetype ortho
+skinparam defaultFontSize 17
+skinparam defaultFontColor #202421
+skinparam ArrowColor #68736D
+skinparam rectangleBorderColor #D5DCD7
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #EFF5F1
+skinparam noteBorderColor #D5E4DA
 left to right direction
-rectangle "用户\n声明期望状态\n3 个 Pod" as User #E8F0FE
-rectangle "Kubernetes\n自动规划与执行" as K8s #E8F5E9
-rectangle "实际运行状态\n3 个 Pod" as Result #FFF3E0
+rectangle "用户\n声明期望状态\n3 个 Pod" as User
+rectangle "Kubernetes\n自动规划与执行" as K8s #E4F1E8
+rectangle "实际运行状态\n3 个 Pod" as Result
 User --> K8s : 声明 What
 K8s --> Result : 实现 How
 note bottom of K8s
@@ -47,19 +51,24 @@ end note
 
 ```plantuml
 @startuml
-title 控制循环：持续消除状态差异
-skinparam backgroundColor white
+skinparam backgroundColor #F9F9F7
 skinparam shadowing false
-skinparam roundcorner 14
+skinparam roundcorner 16
 skinparam defaultFontName Microsoft YaHei
-skinparam ArrowColor #64748B
-rectangle "期望状态\n3 个 Pod" as Desired #E8F0FE
-rectangle "实际状态\n2 个 Pod" as Actual #FFF3E0
-rectangle "Controller\n比较状态差异" as Controller #EDE9FE
-rectangle "执行调谐\n创建 1 个 Pod" as Action #E8F5E9
+skinparam defaultFontSize 17
+skinparam defaultFontColor #202421
+skinparam ArrowColor #68736D
+skinparam rectangleBorderColor #D5DCD7
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #EFF5F1
+skinparam noteBorderColor #D5E4DA
+rectangle "期望状态\n3 个 Pod" as Desired
+rectangle "实际状态\n2 个 Pod" as Actual
+rectangle "Controller\n比较状态差异" as Controller #E4F1E8
+rectangle "执行调谐\n创建 1 个 Pod" as Action
 Desired -down-> Controller : 读取期望
 Actual -down-> Controller : 观察实际
-Controller -down-> Action : Reconcile
+Controller -down-> Action : 调谐
 Action -right-> Actual : 更新实际状态
 note bottom of Action
   Observe → Diff → Reconcile
@@ -74,17 +83,22 @@ Kubernetes 不保证立即达到目标，而是通过异步调谐逐步收敛。
 
 ```plantuml
 @startuml
-title 最终一致性：实际状态逐渐接近期望状态
-skinparam backgroundColor white
+skinparam backgroundColor #F9F9F7
 skinparam shadowing false
-skinparam roundcorner 12
+skinparam roundcorner 16
 skinparam defaultFontName Microsoft YaHei
-skinparam ArrowColor #64748B
+skinparam defaultFontSize 17
+skinparam defaultFontColor #202421
+skinparam ArrowColor #68736D
+skinparam rectangleBorderColor #D5DCD7
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #EFF5F1
+skinparam noteBorderColor #D5E4DA
 left to right direction
-rectangle "T0\n期望 3 个 Pod\n实际 0 个" as A #FDECEC
-rectangle "T1\n期望 3 个 Pod\n实际 1 个" as B #FFF3E0
-rectangle "T2\n期望 3 个 Pod\n实际 2 个" as C #FFF3E0
-rectangle "T3\n期望 3 个 Pod\n实际 3 个" as D #E8F5E9
+rectangle "T0\n期望 3 个 Pod\n实际 0 个" as A
+rectangle "T1\n期望 3 个 Pod\n实际 1 个" as B
+rectangle "T2\n期望 3 个 Pod\n实际 2 个" as C
+rectangle "T3\n期望 3 个 Pod\n实际 3 个" as D #E4F1E8
 A --> B : 调谐
 B --> C : 调谐
 C --> D : 调谐
@@ -101,26 +115,33 @@ Kubernetes 将状态存储、调谐、调度和节点执行分离，各组件围
 
 ```plantuml
 @startuml
-title Kubernetes 模块化架构
-skinparam backgroundColor white
+skinparam backgroundColor #F9F9F7
 skinparam shadowing false
-skinparam roundcorner 12
+skinparam roundcorner 16
 skinparam defaultFontName Microsoft YaHei
-skinparam ArrowColor #64748B
+skinparam defaultFontSize 16
+skinparam defaultFontColor #202421
+skinparam ArrowColor #68736D
 skinparam componentStyle rectangle
-skinparam linetype ortho
-top to bottom direction
+skinparam componentBorderColor #D5DCD7
+skinparam componentBackgroundColor #FFFFFF
+skinparam databaseBorderColor #D5DCD7
+skinparam databaseBackgroundColor #FFFFFF
+skinparam nodeBorderColor #D5DCD7
+skinparam nodeBackgroundColor #FFFFFF
+skinparam packageBorderColor #D5DCD7
+skinparam packageBackgroundColor #F2F4F1
 actor "用户 / kubectl" as User
-package "Control Plane" #F1F5F9 {
-  component "API Server\n统一 API 入口" as API #DCEAFE
-  database "etcd\n持久化集群状态" as ETCD #EDE9FE
-  component "Controller Manager\n状态调谐" as CM #E8F5E9
-  component "Scheduler\n调度决策" as SCH #FFF3E0
+package "Control Plane" {
+  component "API Server\n统一 API 入口" as API #E4F1E8
+  database "etcd\n持久化集群状态" as ETCD
+  component "Controller Manager\n状态调谐" as CM
+  component "Scheduler\n调度决策" as SCH
 }
-package "Worker Node" #F8FAFC {
-  component "Kubelet\n节点代理" as KUBELET #DCEAFE
-  component "Container Runtime\n容器运行时" as CR #E8F5E9
-  node "Pods" as POD #FFF3E0
+package "Worker Node" {
+  component "Kubelet\n节点代理" as KUBELET
+  component "Container Runtime\n容器运行时" as CR
+  node "Pods" as POD
 }
 User --> API : 提交资源声明
 API <--> ETCD : 读写状态
@@ -138,12 +159,17 @@ Kubernetes 假设故障不可避免，通过检测与调谐恢复服务能力。
 
 ```plantuml
 @startuml
-title 面向故障设计：自动恢复机制
-skinparam backgroundColor white
+skinparam backgroundColor #F9F9F7
 skinparam shadowing false
-skinparam roundcorner 12
+skinparam roundcorner 16
 skinparam defaultFontName Microsoft YaHei
-skinparam ArrowColor #64748B
+skinparam defaultFontSize 17
+skinparam defaultFontColor #202421
+skinparam ArrowColor #68736D
+skinparam activityBackgroundColor #FFFFFF
+skinparam activityBorderColor #D5DCD7
+skinparam activityDiamondBackgroundColor #E4F1E8
+skinparam activityDiamondBorderColor #A9C6B2
 start
 :运行中的工作负载;
 if (发生什么故障？) then (容器崩溃)
@@ -168,26 +194,31 @@ Kubernetes 提供统一资源模型，同时允许用户通过 CRD 和 Operator 
 
 ```plantuml
 @startuml
-title Kubernetes 资源抽象与扩展模型
-skinparam backgroundColor white
+skinparam backgroundColor #F9F9F7
 skinparam shadowing false
-skinparam roundcorner 12
+skinparam roundcorner 16
 skinparam defaultFontName Microsoft YaHei
-skinparam ArrowColor #64748B
-skinparam linetype ortho
-top to bottom direction
-rectangle "Kubernetes API\n统一资源模型" as API #E8F0FE
-package "内置资源" #F1F5F9 {
-  rectangle "Deployment" as DEP #E8F5E9
-  rectangle "Service" as SVC #E8F5E9
-  rectangle "PVC" as PVC #E8F5E9
+skinparam defaultFontSize 16
+skinparam defaultFontColor #202421
+skinparam ArrowColor #68736D
+skinparam rectangleBorderColor #D5DCD7
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam packageBorderColor #D5DCD7
+skinparam packageBackgroundColor #F2F4F1
+skinparam noteBackgroundColor #EFF5F1
+skinparam noteBorderColor #D5E4DA
+rectangle "Kubernetes API\n统一资源模型" as API #E4F1E8
+package "内置资源" {
+  rectangle "Deployment" as DEP
+  rectangle "Service" as SVC
+  rectangle "PVC" as PVC
 }
-package "自定义资源" #F8FAFC {
-  rectangle "CRD\n扩展 API 资源类型" as CRD #FFF3E0
-  rectangle "Custom Resource\n声明自定义资源实例" as CR #FFF3E0
-  rectangle "Operator / Controller\n实现调谐逻辑" as OP #EDE9FE
+package "自定义资源" {
+  rectangle "CRD\n扩展 API 资源类型" as CRD
+  rectangle "Custom Resource\n声明自定义资源实例" as CR
+  rectangle "Operator / Controller\n实现调谐逻辑" as OP #E4F1E8
   CRD --> CR : 定义资源类型
-  CR --> OP : 监听与调谐
+  OP --> CR : 监听与调谐
 }
 API --> DEP
 API --> SVC
@@ -206,18 +237,21 @@ end note
 
 ```plantuml
 @startuml
-title Kubernetes：声明 → 控制 → 执行
-skinparam backgroundColor white
+skinparam backgroundColor #F9F9F7
 skinparam shadowing false
-skinparam roundcorner 15
+skinparam roundcorner 16
 skinparam defaultFontName Microsoft YaHei
-skinparam ArrowColor #64748B
-skinparam linetype ortho
-top to bottom direction
-rectangle "声明层\n用户定义期望状态\nYAML / kubectl / API" as A #E8F0FE
-rectangle "控制层\n观察 · 比较 · 调谐\nController / Scheduler" as B #EDE9FE
-rectangle "执行层\n资源调度与容器运行\nKubelet / Runtime / Pods" as C #E8F5E9
-rectangle "实际状态\n应用与基础设施" as D #FFF3E0
+skinparam defaultFontSize 17
+skinparam defaultFontColor #202421
+skinparam ArrowColor #68736D
+skinparam rectangleBorderColor #D5DCD7
+skinparam rectangleBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #EFF5F1
+skinparam noteBorderColor #D5E4DA
+rectangle "声明层\n用户定义期望状态\nYAML / kubectl / API" as A
+rectangle "控制层\n观察 · 比较 · 调谐\nController / Scheduler" as B #E4F1E8
+rectangle "执行层\n资源调度与容器运行\nKubelet / Runtime / Pods" as C
+rectangle "实际状态\n应用与基础设施" as D
 A -down-> B : 描述期望
 B -down-> C : 生成执行决策
 C -down-> D : 改变实际状态
