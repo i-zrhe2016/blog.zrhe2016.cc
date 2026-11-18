@@ -33,12 +33,11 @@ corepack pnpm exec wrangler secret put MCP_TOKEN
 
 ## 2. Cloudflare 侧：让 `preview` 分支产生预览部署
 
-代码只能把提交推到 `preview` 分支，**预览部署本身必须在 Cloudflare 控制台打开**：
+GitHub Actions 在 `preview` 分支更新后构建站点，并上传名为 `preview` 的 Worker 版本别名。仓库需要配置 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID` Actions secrets；正式和预览部署验证成功后，应关闭 Cloudflare 原有 Git 自动构建，避免重复部署。
 
-1. Workers & Pages → 当前 Worker → Settings → Build → Branch control，把 `preview` 加入允许构建的分支，并确认该分支使用 Preview 环境（不是 Production）。
-2. 一次推送后，在 Deployments 里拿到该分支预览的地址，例如 `https://preview-astro-paper.<subdomain>.workers.dev`。
-3. 把该地址填进 `PREVIEW_ORIGIN`。若使用自定义域名，同样填解析后的完整地址（不带结尾斜线）。
-4. 预览地址默认是公开的。如需只让自己访问，可为它单独创建一个 Cloudflare Access 应用；MCP 客户端本身不访问该地址，Access 不影响发布。
+1. 在 GitHub Actions 中确认预览版本上传成功，并检查 Cloudflare 显示的预览地址，例如 `https://preview-astro-paper.<subdomain>.workers.dev`。
+2. 把该地址填进 `PREVIEW_ORIGIN`。若使用自定义域名，同样填解析后的完整地址（不带结尾斜线）。
+3. 预览地址默认是公开的。如需只让自己访问，可为它单独创建一个 Cloudflare Access 应用；MCP 客户端本身不访问该地址，Access 不影响发布。
 
 构建期通过 `WORKERS_CI_BRANCH` 判断：非 `main` 分支的构建会把带 `prerelease: true` 的文章一起生成，`main` 构建始终排除它们。预览站仅显示预发布文章，正式站仅显示正式文章。本地开发时所有文章都可见（`import.meta.env.DEV`）。
 
